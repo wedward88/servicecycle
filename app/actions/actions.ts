@@ -4,8 +4,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]/route';
 import schema from './schema';
 import { revalidatePath } from 'next/cache';
+import { Subscription } from '../subscriptions/types';
 
-export async function createSubscription(formData: FormData) {
+const validateSessionUser = async () => {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
@@ -22,20 +23,22 @@ export async function createSubscription(formData: FormData) {
     throw new Error('User not found.');
   }
 
-  const formObj: Record<string, string> = {};
-  formData.forEach((value, key) => {
-    if (typeof value === 'string' && value.length === 0) {
-      return;
-    }
+  return user;
+};
 
-    if (value === null || value === undefined) {
-      return;
-    }
+export async function createSubscription(formData: Subscription) {
+  const user = await validateSessionUser();
 
-    formObj[key] = value as string;
-  });
+  const validation = schema.safeParse(formData);
 
-  const { serviceName, description, cost, expirationDate } = formObj;
+  if (!validation.success) {
+    const errorMessages = validation.error.errors
+      .map((err) => `${err.path.join('.')}: ${err.message}`)
+      .join(', ');
+    throw new Error(`Invalid form parameters. ${errorMessages}`);
+  }
+
+  const { serviceName, description, cost, expirationDate } = formData;
 
   const isoExpirationDate = expirationDate
     ? new Date(expirationDate).toISOString()
@@ -46,9 +49,9 @@ export async function createSubscription(formData: FormData) {
     await prisma.subscription.create({
       data: {
         userId: user.id,
-        provider: serviceName,
-        description: description,
-        cost: cost,
+        serviceName,
+        description,
+        cost,
         expirationDate: isoExpirationDate,
       },
     });
@@ -58,6 +61,52 @@ export async function createSubscription(formData: FormData) {
   } catch (error: any) {
     throw new Error(
       `Failed to create subscription: ${error.message}`
+    );
+  }
+}
+
+export async function editSubscription(formData: Subscription) {
+  await validateSessionUser();
+
+  const { id, expirationDate } = formData;
+
+  const isoExpirationDate = expirationDate
+    ? new Date(expirationDate).toISOString()
+    : null;
+
+  try {
+    // Create the subscription in the database
+    await prisma.subscription.update({
+      where: {
+        id: id,
+      },
+      data: {
+        ...formData,
+        expirationDate: isoExpirationDate,
+      },
+    });
+
+    // Revalidate the cache if needed
+    revalidatePath('/');
+  } catch (error: any) {
+    throw new Error(`Failed to edit subscription: ${error.message}`);
+  }
+}
+
+export async function deleteSubscription(id: number) {
+  await validateSessionUser();
+
+  try {
+    await prisma.subscription.delete({
+      where: {
+        id,
+      },
+    });
+
+    revalidatePath('/');
+  } catch (error: any) {
+    throw new Error(
+      `Failed to delete subscription: ${error.message}`
     );
   }
 }

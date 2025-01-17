@@ -1,7 +1,7 @@
 'use client';
-
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+
 import SignOutLink from './SignOut';
 
 const NavBar = () => {
