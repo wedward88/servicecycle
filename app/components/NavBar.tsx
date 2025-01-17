@@ -2,8 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-
-import { authOptions } from '../api/auth/[...nextauth]/route';
+import SignOutLink from './SignOut';
 
 const NavBar = () => {
   const { status, data: session } = useSession();
@@ -14,7 +13,8 @@ const NavBar = () => {
       {status === 'authenticated' && (
         <div className="flex w-[17%] justify-between">
           {session.user!.name}
-          <Link href="/api/auth/signout">Sign Out</Link>
+          {/* <Link href="/api/auth/signout">Sign Out</Link> */}
+          <SignOutLink />
         </div>
       )}
       {status === 'unauthenticated' && (
