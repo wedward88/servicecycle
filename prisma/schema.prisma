@@ -44,13 +44,14 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String?
-  email         String?   @unique
-  emailVerified DateTime? @map("email_verified")
+  email         String?        @unique
+  emailVerified DateTime?      @map("email_verified")
   image         String?
   accounts      Account[]
   sessions      Session[]
+  subscriptions Subscription[]
 
   @@map("users")
 }
@@ -62,4 +63,17 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verification_tokens")
+}
+
+model Subscription {
+  id             Int       @id @default(autoincrement())
+  provider       String
+  description    String?
+  logo           String?
+  cost           Decimal?  @default(0.00)
+  expirationDate DateTime?
+  userId         String
+  user           User      @relation(fields: [userId], references: [id])
+
+  @@map("subscriptions")
 }

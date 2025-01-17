@@ -2,8 +2,9 @@ import GoogleProvider from 'next-auth/providers/google';
 import NextAuth from 'next-auth';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import prisma from '@/prisma/client';
+import { NextAuthOptions } from 'next-auth';
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
@@ -13,6 +14,15 @@ export const authOptions = {
   ],
   session: {
     strategy: 'jwt',
+  },
+  callbacks: {
+    async redirect({ url, baseUrl }) {
+      // Redirect the user to /subscriptions after successful login
+      if (url === baseUrl || url.startsWith(baseUrl)) {
+        return `${baseUrl}/subscriptions`; // This will redirect to /subscriptions
+      }
+      return url; // Default redirection
+    },
   },
 };
 
