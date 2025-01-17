@@ -67,10 +67,10 @@ model VerificationToken {
 
 model Subscription {
   id             Int       @id @default(autoincrement())
-  provider       String
+  serviceName    String
   description    String?
   logo           String?
-  cost           Decimal?  @default(0.00)
+  cost           String?
   expirationDate DateTime?
   userId         String
   user           User      @relation(fields: [userId], references: [id])

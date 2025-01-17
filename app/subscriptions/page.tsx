@@ -1,13 +1,15 @@
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../api/auth/[...nextauth]/route';
-
-import NewSubForm from '../components/Form';
-import { subscriptionFormFields } from './FormManifest';
 import prisma from '@/prisma/client';
+
+import { authOptions } from '../api/auth/[...nextauth]/route';
+import SubForm from '../components/form/Form';
+import SubTable from './SubTable';
+import { SubscriptionFormFields } from '../components/form/FormManifest';
 
 const SubscriptionPage = async () => {
   const session = await getServerSession(authOptions);
 
+  // Get user and their subscriptions
   const user = await prisma.user.findUnique({
     where: {
       email: session!.user!.email!,
@@ -22,22 +24,13 @@ const SubscriptionPage = async () => {
   return (
     <div>
       <h1>Your Subscriptions</h1>
-      <NewSubForm
+      <SubForm
         formTitle="Create New Subscription"
         openText="Create New"
         submitText="Save"
-        formFields={subscriptionFormFields}
+        formFields={SubscriptionFormFields}
       />
-      {userSubs && (
-        <ul>
-          {userSubs.map((sub) => (
-            <li key={sub.id}>
-              <h2>{sub.provider}</h2>
-              <p>{sub.description}</p>
-            </li>
-          ))}
-        </ul>
-      )}
+      <SubTable userSubscriptions={userSubs} />
     </div>
   );
 };

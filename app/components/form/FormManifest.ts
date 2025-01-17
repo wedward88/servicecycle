@@ -1,6 +1,6 @@
-import { fieldType } from '../components/Form';
+import { fieldType } from './types';
 
-export const subscriptionFormFields: fieldType[] = [
+export const SubscriptionFormFields: fieldType[] = [
   {
     name: 'serviceName',
     title: 'Service Name',
