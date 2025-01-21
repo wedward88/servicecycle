@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
 const schema = z.object({
-  serviceName: z.string().nonempty('Service Name is required.'),
+  streamingProviderId: z.number(),
+  id: z.number().optional(),
   description: z.string().optional(),
-  expirationDate: z.string().optional(),
   cost: z.string().optional(),
 });
 

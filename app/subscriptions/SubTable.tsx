@@ -6,6 +6,8 @@ interface SubTableProps {
   userSubscriptions: Subscription[];
 }
 
+const baseImageURL = 'https://www.themoviedb.org/t/p/w500';
+
 const SubTable: React.FC<SubTableProps> = ({ userSubscriptions }) => {
   return (
     <div>
@@ -16,7 +18,6 @@ const SubTable: React.FC<SubTableProps> = ({ userSubscriptions }) => {
               <th>Name</th>
               <th>Description</th>
               <th>Cost</th>
-              <th>Expiration Date</th>
             </tr>
           </thead>
           <tbody>
@@ -24,29 +25,23 @@ const SubTable: React.FC<SubTableProps> = ({ userSubscriptions }) => {
               <tr key={sub.id} className="hover:bg-gray-800">
                 <td>
                   <div className="flex items-center gap-3">
-                    {sub.logo && (
+                    {sub.streamingProvider && (
                       <img
-                        src={sub.logo}
-                        alt={`${sub.serviceName} logo`}
+                        src={`${baseImageURL}${sub.streamingProvider?.logoUrl}`}
+                        alt={`${sub.streamingProvider.name} logo`}
                         className="w-8 h-8"
                       />
                     )}
                     <div>
                       <div className="font-bold">
-                        {sub.serviceName}
+                        {sub.streamingProvider!.name}
                       </div>
                     </div>
                   </div>
                 </td>
                 <td>{sub.description || 'N/A'}</td>
                 <td>{sub.cost ? sub.cost.toString() : 'N/A'}</td>
-                <td>
-                  {sub.expirationDate
-                    ? new Date(
-                        sub.expirationDate
-                      ).toLocaleDateString()
-                    : 'N/A'}
-                </td>
+
                 <td>
                   <Form
                     formTitle="Edit Subscription"

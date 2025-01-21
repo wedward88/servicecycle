@@ -6,3 +6,10 @@ export type fieldType = {
   type: 'text' | 'number' | 'date' | 'email';
   required: boolean;
 };
+
+export interface StreamingProvider {
+  name: string;
+  id: number;
+  logoUrl: string;
+  providerId: number;
+}
