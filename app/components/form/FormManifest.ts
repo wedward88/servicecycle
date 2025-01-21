@@ -3,8 +3,8 @@ import { fieldType } from './types';
 export const SubscriptionFormFields: fieldType[] = [
   {
     name: 'serviceName',
-    title: 'Service Name',
-    placeholder: 'Netflix',
+    title: 'Name',
+    placeholder: 'Search',
     optional: false,
     type: 'text',
     required: true,
@@ -23,14 +23,6 @@ export const SubscriptionFormFields: fieldType[] = [
     placeholder: '0.00',
     optional: true,
     type: 'number',
-    required: false,
-  },
-  {
-    name: 'expirationDate',
-    title: 'Expiration Date',
-    placeholder: '',
-    optional: true,
-    type: 'date',
     required: false,
   },
 ];

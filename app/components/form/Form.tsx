@@ -1,13 +1,16 @@
 'use client';
 import { useState } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 
 import {
   createSubscription,
   editSubscription,
   deleteSubscription,
+  searchStreamingProvider,
 } from '../../actions/actions';
-import { fieldType } from './types';
+import { fieldType, StreamingProvider } from './types';
 import { Subscription } from '@/app/subscriptions/types';
+import InputList from './components/InputList';
 
 type FormProps = {
   openText: string;
@@ -27,11 +30,11 @@ const Form = ({
   const emptyForm = {
     id: undefined,
     userId: '',
-    serviceName: '',
+    streamingProviderId: undefined,
+    streamingProvider: undefined,
     description: '',
     logo: '',
     cost: '',
-    expirationDate: '',
   };
   const initialState: Subscription = initialData || emptyForm;
   const formId = initialData
@@ -41,22 +44,66 @@ const Form = ({
   const [formData, setFormData] =
     useState<Subscription>(initialState);
 
+  const [dropDownData, setdropDownData] = useState<
+    StreamingProvider[]
+  >([]);
+
+  const initialSearchVal = initialData
+    ? initialData.streamingProvider!.name
+    : '';
+  const [searchValue, setSearchValue] = useState(initialSearchVal);
+
+  const debouncedSearch = useDebouncedCallback(
+    async (value: string) => {
+      const result = await searchStreamingProvider(value);
+      setdropDownData(result);
+    },
+    1000
+  );
+
+  const clearAllValues = () => {
+    setSearchValue('');
+    setFormData(emptyForm);
+  };
+
   const handleSubmit = async () => {
     if (initialData) {
       editSubscription(formData);
+      clearAllValues();
     } else {
       createSubscription(formData);
-      setFormData(emptyForm);
+      clearAllValues();
     }
   };
 
   const handleDelete = async () => {
     deleteSubscription(formData.id as number);
+    clearAllValues();
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const resultOnClick = (provider: StreamingProvider) => {
+    setSearchValue(provider.name);
+    setdropDownData([]);
+    setFormData((prevData) => ({
+      ...prevData,
+      serviceName: provider.name,
+      streamingProviderId: provider.id,
+    }));
+  };
 
+  const handleSearch = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { value } = e.target;
+
+    setSearchValue(value);
+    debouncedSearch(value);
+  };
+
+  const handleChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
@@ -70,17 +117,6 @@ const Form = ({
     } else if (modal && modal.open) {
       modal.close();
     }
-  };
-
-  const convertValue = (value: any): string => {
-    if (value === null || value === undefined) {
-      return '';
-    }
-    if (value instanceof Date) {
-      return value.toISOString();
-    }
-
-    return value;
   };
 
   return (
@@ -106,29 +142,15 @@ const Form = ({
               className="flex flex-col space-y-5"
               onSubmit={toggleModal}
             >
-              {formFields.map((field, idx) => (
-                <label
-                  key={idx}
-                  className="input input-bordered flex items-center gap-2"
-                >
-                  {field.title}
-                  <input
-                    type={field.type}
-                    name={field.name}
-                    onChange={handleChange}
-                    placeholder={field.placeholder}
-                    value={convertValue(
-                      formData[field.name as keyof Subscription]
-                    )}
-                    step={0.01}
-                    className="grow"
-                    required={field.required}
-                  />
-                  {field.optional && (
-                    <span className="badge badge-info">Optional</span>
-                  )}
-                </label>
-              ))}
+              <InputList
+                dropDownData={dropDownData}
+                formData={formData}
+                formFields={formFields}
+                searchValue={searchValue}
+                handleSearch={handleSearch}
+                handleChange={handleChange}
+                resultOnClick={resultOnClick}
+              />
               <button type="submit" className="btn">
                 {submitText}
               </button>
