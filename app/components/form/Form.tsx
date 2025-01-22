@@ -71,7 +71,6 @@ const Form = ({
   const handleSubmit = async () => {
     if (initialData) {
       editSubscription(formData);
-      clearAllValues();
     } else {
       createSubscription(formData);
       clearAllValues();

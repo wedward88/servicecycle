@@ -69,6 +69,23 @@ export async function searchStreamingProvider(query: string) {
   return providers;
 }
 
+export async function getUserSubscriptions(email: string) {
+  const userSubs = await prisma.user.findUnique({
+    where: {
+      email: email,
+    },
+    include: {
+      subscriptions: {
+        include: {
+          streamingProvider: true,
+        },
+      },
+    },
+  });
+
+  return userSubs;
+}
+
 export async function createSubscription(formData: Subscription) {
   const user = await validateSessionUser();
 
@@ -95,7 +112,7 @@ export async function createSubscription(formData: Subscription) {
     });
 
     // Revalidate the cache if needed
-    revalidatePath('/');
+    revalidatePath('/subscriptions');
   } catch (error: any) {
     throw new Error(
       `Failed to create subscription: ${error.message}`
@@ -129,7 +146,7 @@ export async function editSubscription(formData: Subscription) {
     });
 
     // Revalidate the cache if needed
-    revalidatePath('/');
+    revalidatePath('/subscriptions');
   } catch (error: any) {
     throw new Error(`Failed to edit subscription: ${error.message}`);
   }
@@ -145,7 +162,7 @@ export async function deleteSubscription(id: number) {
       },
     });
 
-    revalidatePath('/');
+    revalidatePath('/subscriptions');
   } catch (error: any) {
     throw new Error(
       `Failed to delete subscription: ${error.message}`
