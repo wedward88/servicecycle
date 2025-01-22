@@ -9,9 +9,8 @@ export default async function Home() {
             Welcome to ServiceCycle.
           </h1>
           <p className="py-6">
-            Are you tired of signing up for loads of streaming
-            subscriptions in order to watch your favorite movies and
-            shows?
+            Are you tired of juggling subscriptions in order to watch
+            your favorite movies and shows?
             <br /> Are you struggling to keep track of them?
             <br /> <br /> Then you've come to the right place. Click
             'Get started' below to start tracking your subscriptions

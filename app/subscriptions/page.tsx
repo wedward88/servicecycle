@@ -5,6 +5,7 @@ import { authOptions } from '../api/auth/[...nextauth]/route';
 import SubForm from '../components/form/Form';
 import SubTable from './SubTable';
 import { SubscriptionFormFields } from '../components/form/FormManifest';
+import SubTotal from './SubTotal';
 
 const SubscriptionPage = async () => {
   const session = await getServerSession(authOptions);
@@ -36,6 +37,7 @@ const SubscriptionPage = async () => {
           formFields={SubscriptionFormFields}
         />
         <SubTable userSubscriptions={userSubs} />
+        <SubTotal userSubscriptions={userSubs} />
       </div>
     </div>
   );

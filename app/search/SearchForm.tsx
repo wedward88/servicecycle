@@ -32,10 +32,10 @@ const SearchForm = () => {
     <div className="flex flex-col space-y-10 w-full items-center">
       <input
         type="text"
-        placeholder="Ex...Severance"
+        placeholder="Search"
         value={searchTerm}
         onChange={handleChange}
-        className="text-2xl border-b-2 b-t-0 border-l-0 border-r-0 border-primary w-full max-w-xs focus:outline-none bg-inherit h-10"
+        className="text-2xl border-b-4 b-t-0 border-l-0 border-r-0 border-primary w-full max-w-xs focus:outline-none bg-inherit h-10"
       />
       {isLoading ? (
         <LoadingSkeleton />
