@@ -20,6 +20,8 @@ type FormProps = {
   initialData?: Subscription;
 };
 
+const DEBOUNCE_DELAY = 500;
+
 const Form = ({
   submitText,
   openText,
@@ -58,7 +60,7 @@ const Form = ({
       const result = await searchStreamingProvider(value);
       setdropDownData(result);
     },
-    1000
+    DEBOUNCE_DELAY
   );
 
   const clearAllValues = () => {
@@ -121,7 +123,10 @@ const Form = ({
 
   return (
     <div>
-      <button className="btn" onClick={toggleModal}>
+      <button
+        className="p-2 hover:bg-base-300 rounded-lg"
+        onClick={toggleModal}
+      >
         {openText}
       </button>
       <dialog

@@ -10,12 +10,12 @@ const StreamingProviderList = ({
   itemOnClick,
 }: StreamingProviderListProps) => {
   return (
-    <ul className="join join-vertical absolute mt-2 border border-gray-600">
+    <ul className="scrollbar rounded-xl w-full max-h-[400%] mt-2 border border-base-300 overflow-y-auto absolute z-10">
       {list.map((provider, idx) => {
         return (
           <li
             key={idx}
-            className="input join-item flex items-center hover:bg-gray-600 cursor-pointer"
+            className="input join-item flex items-center hover:bg-base-300 cursor-pointer"
             onClick={() => itemOnClick(provider)}
           >
             {provider.name}

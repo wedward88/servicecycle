@@ -6,7 +6,7 @@ const SignOutLink = () => {
   };
 
   return (
-    <button onClick={handleSignOut} className="btn">
+    <button onClick={handleSignOut} className="">
       Sign Out
     </button>
   );

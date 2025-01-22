@@ -26,13 +26,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="aqua">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col items-center p-5`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col items-center m-2 p-5`}
       >
         <AuthProvider>
           <NavBar />
-          <main>{children}</main>
+          <main className="w-full">{children}</main>
         </AuthProvider>
       </body>
     </html>
