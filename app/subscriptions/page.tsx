@@ -26,16 +26,16 @@ const SubscriptionPage = async () => {
   const userSubs = user?.subscriptions || [];
 
   return (
-    <div className="flex flex-col items-center space-y-10">
+    <div className="flex flex-col items-center space-y-10 mt-10">
       <h1 className="text-3xl">{user!.name}'s Subscriptions</h1>
-      <SubTable userSubscriptions={userSubs} />
-      <div className="flex items-start w-full">
+      <div className="flex flex-col items-start">
         <SubForm
           formTitle="Create New Subscription"
           openText="Create New"
           submitText="Save"
           formFields={SubscriptionFormFields}
         />
+        <SubTable userSubscriptions={userSubs} />
       </div>
     </div>
   );

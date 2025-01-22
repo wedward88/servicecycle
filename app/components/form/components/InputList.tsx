@@ -37,8 +37,8 @@ const InputList = ({
     const allInputs = formFields.map((field, idx) => {
       const isSearch = field.name === 'serviceName';
       return (
-        <div key={idx}>
-          <label className="input input-bordered flex items-center gap-2 text-sm text-gray-700">
+        <div key={idx} className="relative">
+          <label className="input input-bordered flex items-center gap-2 text-sm text-base-content">
             {field.title}
             <input
               type={field.type}
@@ -55,7 +55,7 @@ const InputList = ({
               step={0.01}
               className={`${
                 isSearch && 'relative '
-              }grow text-slate-400 text-lg`}
+              }grow text-info-content text-lg`}
               required={field.required}
             />
             {field.optional && (

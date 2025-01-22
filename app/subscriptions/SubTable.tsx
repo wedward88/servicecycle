@@ -12,7 +12,7 @@ const SubTable: React.FC<SubTableProps> = ({ userSubscriptions }) => {
   return (
     <div>
       {userSubscriptions && (
-        <table className="table">
+        <table className="table rounded-xl bg-base-200 mt-2">
           <thead>
             <tr>
               <th>Name</th>
@@ -22,7 +22,10 @@ const SubTable: React.FC<SubTableProps> = ({ userSubscriptions }) => {
           </thead>
           <tbody>
             {userSubscriptions.map((sub) => (
-              <tr key={sub.id} className="hover:bg-gray-800">
+              <tr
+                key={sub.id}
+                className="hover:bg-base-300 last:hover:rounded-2xl"
+              >
                 <td>
                   <div className="flex items-center gap-3">
                     {sub.streamingProvider && (

@@ -19,9 +19,9 @@ export const authOptions: NextAuthOptions = {
     async redirect({ url, baseUrl }) {
       // Redirect the user to /subscriptions after successful login
       if (url === baseUrl || url.startsWith(baseUrl)) {
-        return `${baseUrl}/subscriptions`; // This will redirect to /subscriptions
+        return `${baseUrl}/subscriptions`;
       }
-      return url; // Default redirection
+      return baseUrl;
     },
   },
 };
