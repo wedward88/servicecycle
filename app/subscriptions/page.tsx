@@ -1,34 +1,27 @@
 import { getServerSession } from 'next-auth';
-import prisma from '@/prisma/client';
 
 import { authOptions } from '../api/auth/[...nextauth]/route';
 import SubForm from '../components/form/Form';
 import SubTable from './SubTable';
 import { SubscriptionFormFields } from '../components/form/FormManifest';
 import SubTotal from './SubTotal';
+import { getUserSubscriptions } from '../actions/actions';
 
 const SubscriptionPage = async () => {
   const session = await getServerSession(authOptions);
 
-  // Get user and their subscriptions
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session!.user!.email!,
-    },
-    include: {
-      subscriptions: {
-        include: {
-          streamingProvider: true,
-        },
-      },
-    },
-  });
+  if (!session?.user?.email) {
+    throw new Error('User not authenticated');
+  }
 
-  const userSubs = user?.subscriptions || [];
+  // Get user and their subscriptions
+  const userSubs = await getUserSubscriptions(session?.user?.email);
+
+  const subs = userSubs?.subscriptions || [];
 
   return (
     <div className="flex flex-col items-center space-y-10 mt-10">
-      <h1 className="text-3xl">{user!.name}'s Subscriptions</h1>
+      <h1 className="text-3xl">{userSubs!.name}'s Subscriptions</h1>
       <div className="flex flex-col items-start">
         <SubForm
           formTitle="Create New Subscription"
@@ -36,8 +29,8 @@ const SubscriptionPage = async () => {
           submitText="Save"
           formFields={SubscriptionFormFields}
         />
-        <SubTable userSubscriptions={userSubs} />
-        <SubTotal userSubscriptions={userSubs} />
+        <SubTable userSubscriptions={subs} />
+        <SubTotal userSubscriptions={subs} />
       </div>
     </div>
   );
