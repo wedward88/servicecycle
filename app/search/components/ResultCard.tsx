@@ -16,7 +16,7 @@ const ResultCard = ({
         <img
           src={imgUrl}
           alt={title}
-          className="w-full h-[300px] object-cover"
+          className="w-full h-[400px] object-cover object-top"
         />
       </figure>
       <div className="card-body">
