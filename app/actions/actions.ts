@@ -26,6 +26,20 @@ const validateSessionUser = async () => {
   return user;
 };
 
+export async function fetchWatchProviders(type: string, id: number) {
+  const TMDB_ENDPOINT = `${type}/${id}/watch/providers`;
+  const URL = `${process.env.TMDB_URL}${TMDB_ENDPOINT}?api_key=${process.env.TMDB_API_KEY}`;
+  const response = await fetch(URL);
+
+  if (!response.ok) {
+    throw new Error(`Error fetching data: ${response.statusText}`);
+  }
+
+  const media = await response.json();
+
+  return media.results.US;
+}
+
 export async function fetchTMDBResults(query: string) {
   const TMDB_ENDPOINT = 'search/multi?query=';
   const URL = `${process.env.TMDB_URL}${TMDB_ENDPOINT}${query}&api_key=${process.env.TMDB_API_KEY}`;
@@ -98,14 +112,13 @@ export async function createSubscription(formData: Subscription) {
     throw new Error(`Invalid form parameters. ${errorMessages}`);
   }
 
-  const { streamingProviderId, description, cost } = validation.data;
+  const { streamingProviderId, cost } = validation.data;
 
   try {
     // Create the subscription in the database
     await prisma.subscription.create({
       data: {
         userId: user.id,
-        description,
         cost,
         streamingProviderId: streamingProviderId,
       },

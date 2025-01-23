@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
+import clsx from 'clsx';
 
 import {
   createSubscription,
@@ -34,7 +35,6 @@ const Form = ({
     userId: '',
     streamingProviderId: undefined,
     streamingProvider: undefined,
-    description: '',
     logo: '',
     cost: '',
   };
@@ -123,7 +123,10 @@ const Form = ({
   return (
     <div>
       <button
-        className="p-2 hover:bg-base-300 rounded-lg"
+        className={clsx(
+          'p-2 hover:bg-base-300 rounded-lg',
+          !initialData && 'underline decoration-2 decoration-accent'
+        )}
         onClick={toggleModal}
       >
         {openText}

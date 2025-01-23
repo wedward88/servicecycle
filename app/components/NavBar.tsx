@@ -3,6 +3,7 @@ import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import clsx from 'clsx';
 
 import SignOutLink from './SignOut';
 
@@ -13,16 +14,22 @@ const NavBar = () => {
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   return (
-    <div className="navbar bg-base-100 flex justify-between">
+    <div
+      className={clsx(
+        'navbar bg-base-100 justify-between',
+        status === 'unauthenticated' && 'hidden',
+        status === 'authenticated' && 'flex'
+      )}
+    >
       {status === 'unauthenticated' && <></>}
       {status === 'loading' && <div>Loading...</div>}
       {status === 'authenticated' && (
         <>
-          <a className="text-xl mr-5 text-primary">ServiceCycle</a>
+          <a className="text-3xl mr-5 text-primary underline decoration-4 decoration-base-200">
+            ServiceCycle
+          </a>
           <div className="gap-2">
-            <div className="flex-1 space-x-5">
-              <Link href="/search">Search</Link>
-            </div>
+            <div className="flex-1 space-x-5"></div>
             <div
               className="dropdown dropdown-end"
               data-toggle="dropdown"
@@ -46,9 +53,17 @@ const NavBar = () => {
               {isOpen && (
                 <ul
                   tabIndex={0}
-                  className="menu menu-sm dropdown-content bg-base-content text-base-200 rounded-box z-[1] mt-3 w-auto p-2 shadow"
+                  className="menu menu-md dropdown-content bg-base-content text-base-200 rounded-box z-[1] mt-3 w-auto p-2 shadow"
                   onClick={toggleDropdown}
                 >
+                  <li>
+                    <Link
+                      href="/search"
+                      className="whitespace-nowrap"
+                    >
+                      Media Search
+                    </Link>
+                  </li>
                   <li>
                     <Link href="/subscriptions">Subscriptions</Link>
                   </li>

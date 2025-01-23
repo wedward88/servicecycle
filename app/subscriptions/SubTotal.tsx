@@ -14,10 +14,10 @@ const SubTotal = ({ userSubscriptions }: SubTotalProps) => {
       }
     }
 
-    return total;
+    return total.toFixed(2);
   };
   return (
-    <div className="flex flex-col items-center w-full mt-10 space-y-10">
+    <div className="flex flex-col md:items-center w-full mt-10 space-y-10">
       <h1 className="text-4xl underline decoration-primary decoration-4">
         Total
       </h1>

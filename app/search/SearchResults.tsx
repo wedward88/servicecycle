@@ -1,29 +1,18 @@
+import clsx from 'clsx';
+
 import ResultCard from './components/ResultCard';
 import { SearchResultItem } from './type';
-
-const baseImageURL = 'https://www.themoviedb.org/t/p/w500';
 
 type SearchResultsProps = {
   searchResults: SearchResultItem[];
 };
 
 const SearchResults = ({ searchResults }: SearchResultsProps) => {
-  console.log(searchResults);
-
   const renderItems = () => {
     const results = searchResults.map((result, idx) => {
-      const isTV = result.media_type === 'tv';
       return (
         <li key={idx}>
-          <ResultCard
-            title={
-              isTV ? result.original_name : result.original_title
-            }
-            imgUrl={`${baseImageURL}${result.poster_path}`}
-            overview={result.overview}
-            firstAirDate={result.first_air_date}
-          />
-          {}
+          <ResultCard result={result} />
         </li>
       );
     });
@@ -31,15 +20,18 @@ const SearchResults = ({ searchResults }: SearchResultsProps) => {
     return results;
   };
 
-  const numColumns = Math.min(searchResults.length, 4); // Max of 4 columns
-  const columnClasses = `grid-cols-${numColumns} md:grid-cols-${Math.min(
-    searchResults.length,
-    3
-  )} lg:grid-cols-${Math.min(searchResults.length, 5)}`;
+  const numColumns = Math.min(searchResults.length, 3); // Max of 3 columns
+
   return (
-    <div className="w-full">
+    <div className="w-full flex justify-center">
       <ul
-        className={`grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4`}
+        className={clsx(
+          'grid gap-4 grid-cols-1', // Default 1 column for small screens
+          numColumns === 2 && 'md:grid-cols-2',
+          numColumns === 2 && 'lg:grid-cols-2',
+          numColumns === 3 && 'md:grid-cols-3',
+          numColumns === 3 && 'lg:grid-cols-3'
+        )}
       >
         {renderItems()}
       </ul>

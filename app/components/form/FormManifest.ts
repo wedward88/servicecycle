@@ -10,14 +10,6 @@ export const SubscriptionFormFields: fieldType[] = [
     required: true,
   },
   {
-    name: 'description',
-    title: 'Description',
-    placeholder: 'Streaming Service',
-    optional: true,
-    type: 'text',
-    required: false,
-  },
-  {
     name: 'cost',
     title: 'Cost',
     placeholder: '0.00',

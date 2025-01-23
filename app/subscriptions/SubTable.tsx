@@ -16,7 +16,7 @@ const SubTable: React.FC<SubTableProps> = ({ userSubscriptions }) => {
           <thead>
             <tr>
               <th>Name</th>
-              <th>Description</th>
+
               <th>Cost</th>
             </tr>
           </thead>
@@ -42,7 +42,7 @@ const SubTable: React.FC<SubTableProps> = ({ userSubscriptions }) => {
                     </div>
                   </div>
                 </td>
-                <td>{sub.description || 'N/A'}</td>
+
                 <td>{sub.cost ? sub.cost.toString() : 'N/A'}</td>
 
                 <td>

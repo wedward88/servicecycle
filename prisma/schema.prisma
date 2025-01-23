@@ -68,9 +68,8 @@ model VerificationToken {
 }
 
 model Subscription {
-  id          Int     @id @default(autoincrement())
-  description String?
-  cost        String?
+  id   Int     @id @default(autoincrement())
+  cost String?
 
   userId String
   user   User   @relation(fields: [userId], references: [id])

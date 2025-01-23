@@ -18,19 +18,30 @@ const SubscriptionPage = async () => {
   const userSubs = await getUserSubscriptions(session?.user?.email);
 
   const subs = userSubs?.subscriptions || [];
+  const noSubs = subs.length === 0;
 
   return (
-    <div className="flex flex-col items-center space-y-10 mt-10">
-      <h1 className="text-3xl">{userSubs!.name}'s Subscriptions</h1>
+    <div className="flex flex-col items-center space-y-10 mt-5">
+      <h1 className="flex w-full text-3xl items-start md:justify-center lg:justify-center">
+        {userSubs!.name}'s subscriptions
+      </h1>
       <div className="flex flex-col items-start">
-        <SubForm
-          formTitle="Create New Subscription"
-          openText="Create New"
-          submitText="Save"
-          formFields={SubscriptionFormFields}
-        />
-        <SubTable userSubscriptions={subs} />
-        <SubTotal userSubscriptions={subs} />
+        <div className="flex items-center text-2xl">
+          {noSubs && 'Click'}
+          <SubForm
+            formTitle="Create New Subscription"
+            openText="Create New"
+            submitText="Save"
+            formFields={SubscriptionFormFields}
+          />
+          {noSubs && 'to get started.'}
+        </div>
+        {!noSubs && (
+          <div>
+            <SubTable userSubscriptions={subs} />
+            <SubTotal userSubscriptions={subs} />
+          </div>
+        )}
       </div>
     </div>
   );
