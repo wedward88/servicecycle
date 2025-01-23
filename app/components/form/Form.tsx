@@ -1,17 +1,18 @@
 'use client';
+import clsx from 'clsx';
 import { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
-import clsx from 'clsx';
+
+import { Subscription } from '@/app/subscriptions/types';
 
 import {
   createSubscription,
-  editSubscription,
   deleteSubscription,
+  editSubscription,
   searchStreamingProvider,
 } from '../../actions/actions';
-import { fieldType, StreamingProvider } from './types';
-import { Subscription } from '@/app/subscriptions/types';
 import InputList from './components/InputList';
+import { fieldType, StreamingProvider } from './types';
 
 type FormProps = {
   openText: string;

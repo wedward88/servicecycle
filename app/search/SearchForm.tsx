@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { fetchTMDBResults } from '../actions/actions';
-import SearchResults from './SearchResults';
 import LoadingSkeleton from './LoadingSkeleton';
+import SearchResults from './SearchResults';
 
 const DEBOUNCE_DELAY = 500;
 

@@ -1,23 +1,22 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
+
+import { Roboto } from 'next/font/google';
 
 import AuthProvider from './api/auth/Provider';
 import NavBar from './components/NavBar';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const roboto = Roboto({
+  weight: ['100', '300'],
   subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
   title: 'ServiceCycle',
   description: 'Track your subscriptions.',
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({
@@ -28,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="aqua">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col items-center m-2 p-5`}
+        className={`${roboto.className} antialiased flex flex-col items-center m-2 p-5`}
       >
         <AuthProvider>
           <NavBar />

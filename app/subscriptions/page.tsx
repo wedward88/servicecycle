@@ -1,11 +1,11 @@
 import { getServerSession } from 'next-auth';
 
-import { authOptions } from '../api/auth/[...nextauth]/route';
-import SubForm from '../components/form/Form';
-import SubTable from './SubTable';
-import { SubscriptionFormFields } from '../components/form/FormManifest';
-import SubTotal from './SubTotal';
 import { getUserSubscriptions } from '../actions/actions';
+import SubForm from '../components/form/Form';
+import { SubscriptionFormFields } from '../components/form/FormManifest';
+import { authOptions } from '../utils/authOptions';
+import SubTable from './SubTable';
+import SubTotal from './SubTotal';
 
 const SubscriptionPage = async () => {
   const session = await getServerSession(authOptions);
@@ -23,7 +23,7 @@ const SubscriptionPage = async () => {
   return (
     <div className="flex flex-col items-center space-y-10 mt-5">
       <h1 className="flex w-full text-3xl items-start md:justify-center lg:justify-center">
-        {userSubs!.name}'s subscriptions
+        {userSubs!.name}&apos;s subscriptions
       </h1>
       <div className="flex flex-col items-start">
         <div className="flex items-center text-2xl">
