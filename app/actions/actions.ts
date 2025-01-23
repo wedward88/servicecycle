@@ -1,10 +1,12 @@
 'use server';
-import prisma from '@/prisma/client';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../api/auth/[...nextauth]/route';
-import schema from './schema';
 import { revalidatePath } from 'next/cache';
+
+import prisma from '@/prisma/client';
+
 import { Subscription } from '../subscriptions/types';
+import { authOptions } from '../utils/authOptions';
+import schema from './schema';
 
 const validateSessionUser = async () => {
   const session = await getServerSession(authOptions);
@@ -37,7 +39,7 @@ export async function fetchWatchProviders(type: string, id: number) {
 
   const media = await response.json();
 
-  return media.results.US;
+  return media.results.US || [];
 }
 
 export async function fetchTMDBResults(query: string) {
@@ -126,10 +128,14 @@ export async function createSubscription(formData: Subscription) {
 
     // Revalidate the cache if needed
     revalidatePath('/subscriptions');
-  } catch (error: any) {
-    throw new Error(
-      `Failed to create subscription: ${error.message}`
-    );
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw new Error(
+        `Failed to create subscription: ${error.message}`
+      );
+    } else {
+      throw new Error('Failed to create subscription: Unknown error');
+    }
   }
 }
 
@@ -160,8 +166,14 @@ export async function editSubscription(formData: Subscription) {
 
     // Revalidate the cache if needed
     revalidatePath('/subscriptions');
-  } catch (error: any) {
-    throw new Error(`Failed to edit subscription: ${error.message}`);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw new Error(
+        `Failed to edit subscription: ${error.message}`
+      );
+    } else {
+      throw new Error('Failed to edit subscription: Unknown error');
+    }
   }
 }
 
@@ -176,9 +188,13 @@ export async function deleteSubscription(id: number) {
     });
 
     revalidatePath('/subscriptions');
-  } catch (error: any) {
-    throw new Error(
-      `Failed to delete subscription: ${error.message}`
-    );
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw new Error(
+        `Failed to delete subscription: ${error.message}`
+      );
+    } else {
+      throw new Error('Failed to delete subscription: Unknown error');
+    }
   }
 }

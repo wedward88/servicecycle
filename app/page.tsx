@@ -6,7 +6,7 @@ export default async function Home() {
     <div className="hero bg-base-200 min-h-80 rounded-3xl">
       <div className="hero-content text-center w-full">
         <div className="flex flex-col justify-center w-full">
-          <h1 className="text-5xl font-bold mb-10 md:mb-14 lg:mb-16">
+          <h1 className="text-5xl font-thin mb-10 md:mb-14 lg:mb-16">
             Welcome to{' '}
             <span className="underline decoration-4 decoration-primary">
               ServiceCycle.
@@ -18,17 +18,17 @@ export default async function Home() {
                 <img
                   alt="subscriptions"
                   src="/images/subscriptions.jpg"
-                  className="object-cover rounded-2xl w-[200px] md:w-[400px] md:h-[600px]"
+                  className="object-cover shadow-xl rounded-2xl w-[200px] md:w-[500px] md:h-[600px]"
                 />
                 <img
                   alt="subscriptions"
                   src="/images/search1.jpg"
-                  className="rounded-2xl shadow-lg hidden lg:block md:w-[400px] md:h-[600px]"
+                  className="rounded-2xl shadow-xl hidden lg:block md:w-[500px] md:h-[600px]"
                 />
                 <img
                   alt="subscriptions"
                   src="/images/search2.jpg"
-                  className="rounded-2xl shadow-lg hidden lg:block md:w-[400px] md:h-[600px]"
+                  className="rounded-2xl shadow-xl hidden xl:block md:w-[500px] md:h-[600px]"
                 />
               </div>
               <div className="mb-6">
@@ -48,9 +48,9 @@ export default async function Home() {
               </div>
               <div>
                 <p className="text-xl mb-6">
-                  Then you've come to the right place. Click 'Get
-                  started' below to start tracking your subscriptions
-                  today.
+                  Then you&apos;ve come to the right place. Click
+                  &apos;Get started&apos; below to start tracking your
+                  subscriptions today.
                 </p>
                 <Link
                   className="btn btn-primary"

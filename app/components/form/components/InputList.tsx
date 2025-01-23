@@ -1,7 +1,8 @@
 'use client';
-import StreamingProviderList from './StreamingProviderList';
-import { fieldType, StreamingProvider } from '../types';
 import { Subscription } from '@/app/subscriptions/types';
+
+import { fieldType, StreamingProvider } from '../types';
+import StreamingProviderList from './StreamingProviderList';
 
 type InputListProps = {
   formData: Subscription;
@@ -22,15 +23,18 @@ const InputList = ({
   handleChange,
   resultOnClick,
 }: InputListProps) => {
-  const convertValue = (value: any): string => {
+  const convertValue = (value: unknown): string => {
     if (value === null || value === undefined) {
       return '';
     }
-    if (value instanceof Date) {
-      return value.toISOString();
+    if (
+      typeof value === 'string' ||
+      typeof value === 'number' ||
+      typeof value === 'boolean'
+    ) {
+      return value.toString();
     }
-
-    return value;
+    return '';
   };
 
   const renderInput = () => {

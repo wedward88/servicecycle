@@ -1,9 +1,9 @@
 'use client';
-import { useSession } from 'next-auth/react';
-import { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
 import clsx from 'clsx';
+import { useSession } from 'next-auth/react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
 
 import SignOutLink from './SignOut';
 
@@ -25,11 +25,15 @@ const NavBar = () => {
       {status === 'loading' && <div>Loading...</div>}
       {status === 'authenticated' && (
         <>
-          <a className="text-3xl mr-5 text-primary underline decoration-4 decoration-base-200">
+          <a className="text-3xl mr-5 font-thin text-primary underline decoration-4 decoration-base-200">
             ServiceCycle
           </a>
           <div className="gap-2">
-            <div className="flex-1 space-x-5"></div>
+            <div className="flex-1 space-x-5 whitespace-nowrap underline decoration-1 decoration-accent hidden md:flex">
+              <Link href="/subscriptions">Subscriptions</Link>
+              <Link href="/search">Media Search</Link>
+            </div>
+
             <div
               className="dropdown dropdown-end"
               data-toggle="dropdown"
@@ -53,7 +57,7 @@ const NavBar = () => {
               {isOpen && (
                 <ul
                   tabIndex={0}
-                  className="menu menu-md dropdown-content bg-base-content text-base-200 rounded-box z-[1] mt-3 w-auto p-2 shadow"
+                  className="menu menu-md dropdown-content bg-base-content text-base-200 font-bold rounded-box z-[1] mt-3 w-auto p-2 shadow"
                   onClick={toggleDropdown}
                 >
                   <li>

@@ -8,7 +8,7 @@ const SubTotal = ({ userSubscriptions }: SubTotalProps) => {
   const calcTotalCost = () => {
     let total = 0;
 
-    for (let sub of userSubscriptions) {
+    for (const sub of userSubscriptions) {
       if (sub.cost) {
         total += parseFloat(sub.cost);
       }
