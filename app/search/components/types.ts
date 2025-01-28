@@ -13,6 +13,7 @@ export type WatchProvidersResponse = {
 
 export type ProviderDictionary = {
   [providerId: number]: {
+    id: number;
     provider_name: string;
     logo_path: string;
   };

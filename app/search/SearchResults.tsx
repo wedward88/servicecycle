@@ -7,11 +7,15 @@ import { SearchResultItem } from './type';
 
 type SearchResultsProps = {
   searchResults: SearchResultItem[];
+  subscriptions: Set<number>;
 };
 const MotionUl = motion.ul;
 const MotionLi = motion.li;
 
-const SearchResults = ({ searchResults }: SearchResultsProps) => {
+const SearchResults = ({
+  searchResults,
+  subscriptions,
+}: SearchResultsProps) => {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
@@ -30,7 +34,7 @@ const SearchResults = ({ searchResults }: SearchResultsProps) => {
           variants={itemVariants}
           whileHover={{ scale: 1.05 }}
         >
-          <ResultCard result={result} />
+          <ResultCard subscriptions={subscriptions} result={result} />
         </MotionLi>
       );
     });

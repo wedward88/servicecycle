@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { IoMdCloseCircleOutline } from 'react-icons/io';
 
 import { SearchResultItem } from '../type';
@@ -8,6 +9,7 @@ type ResultModalProps = {
   title: string;
   isTV: boolean;
   watchProviders: WatchProvidersResponse | null;
+  subscriptions: Set<number>;
 };
 
 const TMDB_IMAGE_URL = 'https://www.themoviedb.org/t/p/w500';
@@ -16,6 +18,7 @@ const ResultModal = ({
   result,
   title,
   watchProviders,
+  subscriptions,
 }: ResultModalProps) => {
   const generateProviderDictionary = (): ProviderDictionary => {
     if (!watchProviders) {
@@ -24,17 +27,16 @@ const ResultModal = ({
 
     const providerDictionary: ProviderDictionary = {};
 
-    // Iterate over the keys ('buy', 'flatrate', etc.) in the watchProviders object
     for (const key in watchProviders) {
       const providers =
         watchProviders[key as keyof WatchProvidersResponse];
 
-      // Iterate over each provider in the array
       if (Array.isArray(providers)) {
         providers.forEach((provider) => {
           providerDictionary[provider.provider_id] = {
             provider_name: provider.provider_name,
             logo_path: provider.logo_path,
+            id: provider.provider_id,
           };
         });
       }
@@ -43,20 +45,39 @@ const ResultModal = ({
     return providerDictionary;
   };
 
+  const sortProviderList = () => {
+    const providerList = Object.values(generateProviderDictionary());
+
+    providerList.sort((a, b) => {
+      const aInSubscriptions = subscriptions.has(a.id);
+      const bInSubscriptions = subscriptions.has(b.id);
+
+      if (aInSubscriptions && !bInSubscriptions) return -1;
+      if (!aInSubscriptions && bInSubscriptions) return 1;
+
+      return 0;
+    });
+
+    return providerList;
+  };
+
   const renderWatchProviders = () => {
-    const watchProviderDict = generateProviderDictionary();
+    const watchProviderList = sortProviderList();
 
     return (
       <div className="mt-2">
         <ul className="flex flex-row space-x-2">
-          {Object.keys(watchProviderDict).map((providerId, idx) => {
-            const provider = watchProviderDict[Number(providerId)];
+          {watchProviderList.map((provider, idx) => {
             return (
               <li key={idx}>
                 <img
                   src={`${TMDB_IMAGE_URL}${provider.logo_path}`}
                   alt={provider.provider_name}
-                  className="w-10 rounded-xl h-full"
+                  title={provider.provider_name}
+                  className={clsx(
+                    'w-10 rounded-xl h-full',
+                    !subscriptions.has(provider.id) && 'opacity-20'
+                  )}
                 ></img>
               </li>
             );
@@ -87,7 +108,8 @@ const ResultModal = ({
             <h3 className="font-bold text-lg">{title}</h3>
             <p className="py-2">{result.overview}</p>
             <h4 className="font-bold text-lg">Where to watch</h4>
-            {watchProviders ? (
+            {watchProviders &&
+            Object.keys(watchProviders).length > 0 ? (
               renderWatchProviders()
             ) : (
               <p>No watch providers found.</p>

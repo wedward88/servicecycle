@@ -2,13 +2,17 @@
 import { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { fetchTMDBResults } from '../actions/actions';
+import { fetchTMDBResults } from '../actions/search/actions';
 import LoadingSkeleton from './LoadingSkeleton';
 import SearchResults from './SearchResults';
 
+interface SearchFormProps {
+  subscriptions: Set<number>;
+}
+
 const DEBOUNCE_DELAY = 500;
 
-const SearchForm = () => {
+const SearchForm = ({ subscriptions }: SearchFormProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +44,10 @@ const SearchForm = () => {
       {isLoading ? (
         <LoadingSkeleton />
       ) : (
-        <SearchResults searchResults={searchResults} />
+        <SearchResults
+          subscriptions={subscriptions}
+          searchResults={searchResults}
+        />
       )}
     </div>
   );

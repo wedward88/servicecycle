@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { ImTv } from 'react-icons/im';
 import { MdLocalMovies } from 'react-icons/md';
 
-import { fetchWatchProviders } from '@/app/actions/actions';
+import { fetchWatchProviders } from '@/app/actions/search/actions';
 
 import { SearchResultItem } from '../type';
 import ResultModal from './ResultModal';
@@ -13,15 +13,15 @@ const baseImageURL = 'https://www.themoviedb.org/t/p/w500';
 
 type ResultCardProps = {
   result: SearchResultItem;
+  subscriptions: Set<number>;
 };
 
-const ResultCard = ({ result }: ResultCardProps) => {
+const ResultCard = ({ result, subscriptions }: ResultCardProps) => {
   const [watchProviders, setWatchProviders] =
     useState<WatchProvidersResponse | null>(null);
 
   const resultClick = async (type: string, id: number) => {
     const wp = await fetchWatchProviders(type, id);
-    console.log(wp);
     setWatchProviders(wp);
     const modal = document.getElementById(`modal-${id}`);
 
@@ -57,6 +57,7 @@ const ResultCard = ({ result }: ResultCardProps) => {
           title={title}
           isTV={isTV}
           watchProviders={watchProviders}
+          subscriptions={subscriptions}
         />
       </div>
     </div>
