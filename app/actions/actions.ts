@@ -1,32 +1,12 @@
 'use server';
-import { getServerSession } from 'next-auth';
+
 import { revalidatePath } from 'next/cache';
 
 import prisma from '@/prisma/client';
 
 import { Subscription } from '../subscriptions/types';
-import { authOptions } from '../utils/authOptions';
 import schema from './schema';
-
-export const validateSessionUser = async () => {
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.email) {
-    throw new Error('User is not authenticated.');
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session?.user?.email,
-    },
-  });
-
-  if (!user) {
-    throw new Error('User not found.');
-  }
-
-  return user;
-};
+import { validateSessionUser } from './utils';
 
 export async function searchStreamingProvider(query: string) {
   if (!query) return [];
