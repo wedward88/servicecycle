@@ -1,22 +1,16 @@
 'use client';
 import clsx from 'clsx';
 import { motion } from 'motion/react';
-import { Dispatch, SetStateAction } from 'react';
-
-import {
-  addToWatchList,
-  removeFromWatchList,
-} from '@/app/actions/watch-list/actions';
 
 import ResultCard from './components/ResultCard';
 import { SearchResultItem } from './type';
-import { WatchListItemType } from './watch-list/type';
 
 type SearchResultsProps = {
   searchResults: SearchResultItem[];
   subscriptions: Set<number>;
-  setWatchList: Dispatch<SetStateAction<WatchListItemType[] | null>>;
-  watchList: WatchListItemType[] | null;
+  handleAddClick: (resultItem: SearchResultItem) => void;
+  handleRemoveClick: (resultItem: SearchResultItem) => void;
+  getWatchListSet: () => Set<number>;
 };
 const MotionUl = motion.ul;
 const MotionLi = motion.li;
@@ -24,8 +18,9 @@ const MotionLi = motion.li;
 const SearchResults = ({
   searchResults,
   subscriptions,
-  setWatchList,
-  watchList,
+  handleAddClick,
+  handleRemoveClick,
+  getWatchListSet,
 }: SearchResultsProps) => {
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -37,30 +32,7 @@ const SearchResults = ({
     visible: { opacity: 1, y: 0 },
   };
 
-  const handleAddClick = async (resultItem: SearchResultItem) => {
-    const newWatchList = await addToWatchList(resultItem);
-    setWatchList(newWatchList);
-  };
-
-  const handleRemoveClick = async (resultItem: SearchResultItem) => {
-    if (watchList) {
-      for (const item of watchList) {
-        if (item.mediaId === resultItem.id) {
-          const watchList = await removeFromWatchList(item);
-          setWatchList(watchList);
-        }
-      }
-    }
-  };
-
   const renderItems = () => {
-    const watchListSet = new Set();
-    if (watchList) {
-      for (const item of watchList) {
-        watchListSet.add(item.mediaId);
-      }
-    }
-
     const results = searchResults.map((result, idx) => {
       return (
         <MotionLi
@@ -69,7 +41,7 @@ const SearchResults = ({
           whileHover={{ scale: 1.05 }}
         >
           <ResultCard
-            isInWatchList={watchListSet.has(result.id)}
+            isInWatchList={getWatchListSet().has(result.id)}
             subscriptions={subscriptions}
             result={result}
             handleAddClick={handleAddClick}

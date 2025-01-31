@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "subscriptions" ALTER COLUMN "cost" DROP DEFAULT,
-ALTER COLUMN "cost" SET DATA TYPE TEXT;

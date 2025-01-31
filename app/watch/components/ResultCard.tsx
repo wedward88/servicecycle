@@ -1,5 +1,6 @@
 'use client';
-import { Dispatch, SetStateAction, useState } from 'react';
+import Image from 'next/image';
+import { useState } from 'react';
 import { ImTv } from 'react-icons/im';
 import { MdLocalMovies } from 'react-icons/md';
 
@@ -44,22 +45,24 @@ const ResultCard = ({
   const title = isTV ? result.original_name : result.original_title;
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <AddToWatchList
         isInWatchList={isInWatchList}
         onAdd={() => handleAddClick(result)}
         onRemove={() => handleRemoveClick(result)}
-        className="absolute top-2 right-2 text-5xl rounded-badge backdrop-blur-lg  font-bold mix-blend-overlay hover:cursor-pointer z-10"
+        className="absolute top-2 right-2 text-5xl rounded-badge backdrop-blur-lg mix-blend-overlay hover:cursor-pointer z-10"
       />
       <div
         onClick={() => resultClick(result.media_type, result.id)}
-        className="card bg-base-300 shadow-xl w-[300px] mx-auto rounded-3xl hover:cursor-pointer"
+        className="card bg-base-300 shadow-xl w-full max-w-72 mx-auto rounded-3xl hover:cursor-pointer"
       >
         <figure>
-          <img
+          <Image
             src={`${baseImageURL}${result.poster_path}`}
             alt={title}
-            className="w-full max-h-[300px] object-top object-cover"
+            width={300}
+            height={100}
+            className="w-full max-h-[300px] object-top object-cover aspect-[3/2.2]"
           />
         </figure>
         <div className="card-body flex flex-row">

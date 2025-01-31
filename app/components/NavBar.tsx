@@ -61,10 +61,7 @@ const NavBar = () => {
                   onClick={toggleDropdown}
                 >
                   <li>
-                    <Link
-                      href="/search"
-                      className="whitespace-nowrap"
-                    >
+                    <Link href="/watch" className="whitespace-nowrap">
                       Watch List
                     </Link>
                   </li>

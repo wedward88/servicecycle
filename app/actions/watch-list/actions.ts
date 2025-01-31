@@ -135,7 +135,7 @@ export const addToWatchList = async (
 export const removeFromWatchList = async (
   item: WatchListItem
 ): Promise<WatchListItem[]> => {
-  await validateSessionUser();
+  const user = await validateSessionUser();
 
   const watchListItem = await prisma.watchListItem.findUnique({
     where: {
@@ -157,7 +157,7 @@ export const removeFromWatchList = async (
     throw Error('WatchListItem not associated with any WatchList.');
   }
 
-  const updatedWatchList = await prisma.watchListOnItems.delete({
+  await prisma.watchListOnItems.delete({
     where: {
       watchListId_watchListItemId: {
         watchListId: watchListOnItem.watchListId,
