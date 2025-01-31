@@ -2,8 +2,10 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ['www.themoviedb.org'],
-    remotePatterns: [{ hostname: 'lh3.googleusercontent.com' }],
+    remotePatterns: [
+      { hostname: 'lh3.googleusercontent.com' },
+      { hostname: 'www.themoviedb.org' },
+    ],
   },
 };
 
