@@ -157,7 +157,7 @@ export const removeFromWatchList = async (
     throw Error('WatchListItem not associated with any WatchList.');
   }
 
-  const updatedWatchList = await prisma.watchListOnItems.delete({
+  await prisma.watchListOnItems.delete({
     where: {
       watchListId_watchListItemId: {
         watchListId: watchListOnItem.watchListId,
