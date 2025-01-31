@@ -1,17 +1,14 @@
-import { getServerSession } from 'next-auth';
-
 import { getUserSubscriptions } from '../actions/actions';
-import { authOptions } from '../utils/authOptions';
-import SearchForm from './SearchForm';
+import { validateSessionUser } from '../actions/utils';
+import SearchSection from './SearchSection';
 
 const SearchPage = async () => {
-  const session = await getServerSession(authOptions);
+  const user = await validateSessionUser();
 
-  if (!session?.user?.email) {
-    throw new Error('User not authenticated');
+  if (!user) {
+    throw new Error('User not found.');
   }
-
-  const userSubs = await getUserSubscriptions(session?.user?.email);
+  const userSubs = await getUserSubscriptions(user.email!);
 
   if (!userSubs) {
     throw new Error('Failed to fetch user subscriptions');
@@ -25,10 +22,7 @@ const SearchPage = async () => {
 
   return (
     <div className="flex flex-col items-start md:items-center lg:items-center space-y-10">
-      <h1 className="text-2xl pl-[8px]">
-        Search for shows or movies
-      </h1>
-      <SearchForm subscriptions={subscriptions} />
+      <SearchSection user={user} subscriptions={subscriptions} />
     </div>
   );
 };

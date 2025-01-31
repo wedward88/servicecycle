@@ -31,7 +31,7 @@ const NavBar = () => {
           <div className="gap-2">
             <div className="flex-1 space-x-5 whitespace-nowrap underline decoration-1 decoration-accent hidden md:flex">
               <Link href="/subscriptions">Subscriptions</Link>
-              <Link href="/search">Media Search</Link>
+              <Link href="/watch">Watch List</Link>
             </div>
 
             <div
@@ -65,7 +65,7 @@ const NavBar = () => {
                       href="/search"
                       className="whitespace-nowrap"
                     >
-                      Media Search
+                      Watch List
                     </Link>
                   </li>
                   <li>

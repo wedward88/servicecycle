@@ -54,6 +54,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   subscriptions Subscription[]
+  watchList     WatchList?
 
   @@map("users")
 }
@@ -72,7 +73,7 @@ model Subscription {
   cost String?
 
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   streamingProviderId Int
   streamingProvider   StreamingProvider @relation(fields: [streamingProviderId], references: [id])
@@ -88,4 +89,39 @@ model StreamingProvider {
   Subscription Subscription[]
 
   @@map("streaming_provider")
+}
+
+model WatchListItem {
+  id            Int     @id @default(autoincrement())
+  mediaId       Int     @unique
+  mediaType     String
+  originalTitle String?
+  originalName  String?
+  posterPath    String
+  overview      String
+
+  WatchListOnItems WatchListOnItems[]
+
+  @@map("watch_list_items")
+}
+
+model WatchList {
+  id     Int    @id @default(autoincrement())
+  userId String @unique
+
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  watchListOnItems WatchListOnItems[]
+
+  @@map("watch_lists")
+}
+
+model WatchListOnItems {
+  watchListId     Int
+  watchListItemId Int
+
+  watchList     WatchList     @relation(fields: [watchListId], references: [id], onDelete: Cascade)
+  watchListItem WatchListItem @relation(fields: [watchListItemId], references: [id], onDelete: Cascade)
+
+  @@id([watchListId, watchListItemId])
+  @@map("watch_list_on_items")
 }

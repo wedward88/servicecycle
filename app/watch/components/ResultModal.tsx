@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import { IoMdCloseCircleOutline } from 'react-icons/io';
 
 import { SearchResultItem } from '../type';
+import AddToWatchList from './AddToWatchList';
 import { ProviderDictionary, WatchProvidersResponse } from './types';
 
 type ResultModalProps = {
@@ -10,6 +11,9 @@ type ResultModalProps = {
   isTV: boolean;
   watchProviders: WatchProvidersResponse | null;
   subscriptions: Set<number>;
+  handleAddClick: (resultItem: SearchResultItem) => void;
+  handleRemoveClick: (resultItem: SearchResultItem) => void;
+  isInWatchList: Boolean;
 };
 
 const TMDB_IMAGE_URL = 'https://www.themoviedb.org/t/p/w500';
@@ -19,6 +23,9 @@ const ResultModal = ({
   title,
   watchProviders,
   subscriptions,
+  handleAddClick,
+  handleRemoveClick,
+  isInWatchList,
 }: ResultModalProps) => {
   const generateProviderDictionary = (): ProviderDictionary => {
     if (!watchProviders) {
@@ -78,7 +85,7 @@ const ResultModal = ({
                     'w-10 rounded-xl h-full',
                     !subscriptions.has(provider.id) && 'opacity-20'
                   )}
-                ></img>
+                />
               </li>
             );
           })}
@@ -99,13 +106,22 @@ const ResultModal = ({
             alt={title}
             className="w-full max-h-[60vh] object-top"
           />
+
           <form method="dialog">
-            <button className="absolute top-0 right-0 p-2 text-5xl text-primary hover:text-accent">
+            <button className="absolute top-0 right-0 p-2 text-4xl text-primary hover:text-accent">
               <IoMdCloseCircleOutline />
             </button>
           </form>
           <div className="p-5">
-            <h3 className="font-bold text-lg">{title}</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-lg">{title}</h3>
+              <AddToWatchList
+                isInWatchList={isInWatchList}
+                onAdd={() => handleAddClick(result)}
+                onRemove={() => handleRemoveClick(result)}
+                className="text-4xl text-white hover:cursor-pointer"
+              />
+            </div>
             <p className="py-2">{result.overview}</p>
             <h4 className="font-bold text-lg">Where to watch</h4>
             {watchProviders &&
