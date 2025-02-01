@@ -3,7 +3,7 @@ import { CiCircleCheck, CiCirclePlus } from 'react-icons/ci';
 interface AddToWatchListProps {
   onAdd: () => void;
   onRemove: () => void;
-  isInWatchList: Boolean;
+  isInWatchList: boolean;
   className: string;
 }
 

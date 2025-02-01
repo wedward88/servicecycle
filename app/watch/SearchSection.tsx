@@ -98,7 +98,6 @@ const SearchSection = ({
     const fetchUserWatchList = async () => {
       try {
         const watchList = await getUserWatchList(user);
-        console.log(watchList);
         setUserWatchList(watchList);
       } catch (error) {
         console.error('Error fetching user watchlist:', error);
@@ -114,7 +113,7 @@ const SearchSection = ({
     debouncedSearch(value);
   };
   return (
-    <section className="flex flex-col items-start mt-10 w-full md:justify-center md:w-[90vw] space-y-5 xl:space-y-0 xl:flex-row xl:space-x-[10vw]">
+    <section className="flex flex-col items-center xl:items-start mt-10 w-full md:w-[90vw] space-y-5 xl:space-y-0 xl:space-x-5 xl:flex-row">
       <WatchList
         handleRemoveClick={handleRemoveClick}
         watchList={userWatchList}
@@ -122,9 +121,7 @@ const SearchSection = ({
       />
       <div className="flex space-y-10 flex-col w-full items-center">
         <div>
-          <h1 className="text-2xl pl-[8px]">
-            Search for shows or movies
-          </h1>
+          <h1 className="text-2xl">Search for shows or movies</h1>
           <label className="inline-flex items-center gap-2 text-2xl border-b-4 b-t-0 border-l-0 border-r-0 border-primary">
             <svg
               xmlns="http://www.w3.org/2000/svg"

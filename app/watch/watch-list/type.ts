@@ -6,4 +6,10 @@ export type WatchListItemType = {
   originalName: string | null;
   posterPath: string;
   overview: string;
+  streamingProviders?: {
+    id: number;
+    name: string;
+    logoUrl: string;
+    providerId: number;
+  }[];
 };

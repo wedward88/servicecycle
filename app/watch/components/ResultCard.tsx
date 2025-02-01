@@ -9,14 +9,14 @@ import { fetchWatchProviders } from '@/app/actions/search/actions';
 import { SearchResultItem } from '../type';
 import AddToWatchList from './AddToWatchList';
 import ResultModal from './ResultModal';
-import { WatchProvidersResponse } from './types';
+import { ProviderDictionary } from './types';
 
 const baseImageURL = 'https://www.themoviedb.org/t/p/w500';
 
 type ResultCardProps = {
   result: SearchResultItem;
   subscriptions: Set<number>;
-  isInWatchList: Boolean;
+  isInWatchList: boolean;
   handleAddClick: (resultItem: SearchResultItem) => void;
   handleRemoveClick: (resultItem: SearchResultItem) => void;
 };
@@ -29,7 +29,7 @@ const ResultCard = ({
   handleRemoveClick,
 }: ResultCardProps) => {
   const [watchProviders, setWatchProviders] =
-    useState<WatchProvidersResponse | null>(null);
+    useState<ProviderDictionary | null>(null);
 
   const resultClick = async (type: string, id: number) => {
     const wp = await fetchWatchProviders(type, id);
@@ -50,7 +50,7 @@ const ResultCard = ({
         isInWatchList={isInWatchList}
         onAdd={() => handleAddClick(result)}
         onRemove={() => handleRemoveClick(result)}
-        className="absolute top-2 right-2 text-5xl rounded-badge backdrop-blur-lg mix-blend-overlay hover:cursor-pointer z-10"
+        className="absolute top-2 right-2 text-5xl rounded-badge backdrop-contrast-200 backdrop-blur-lg hover:cursor-pointer z-10"
       />
       <div
         onClick={() => resultClick(result.media_type, result.id)}

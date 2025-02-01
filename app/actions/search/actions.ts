@@ -1,5 +1,10 @@
 'use server';
 
+import {
+  ProviderDictionary,
+  WatchProvidersResponse,
+} from '@/app/watch/components/types';
+
 export async function fetchWatchProviders(type: string, id: number) {
   const TMDB_ENDPOINT = `${type}/${id}/watch/providers`;
   const URL = `${process.env.TMDB_URL}${TMDB_ENDPOINT}?api_key=${process.env.TMDB_API_KEY}`;
@@ -11,7 +16,24 @@ export async function fetchWatchProviders(type: string, id: number) {
 
   const media = await response.json();
 
-  return media.results.US || [];
+  const providerDictionary: ProviderDictionary = {};
+
+  for (const key in media.results.US) {
+    const providers =
+      media.results.US[key as keyof WatchProvidersResponse];
+
+    if (Array.isArray(providers)) {
+      providers.forEach((provider) => {
+        providerDictionary[provider.provider_id] = {
+          provider_name: provider.provider_name,
+          logo_path: provider.logo_path,
+          id: provider.provider_id,
+        };
+      });
+    }
+  }
+
+  return providerDictionary || {};
 }
 
 export async function fetchTMDBResults(query: string) {

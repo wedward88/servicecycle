@@ -3,17 +3,17 @@ import { IoMdCloseCircleOutline } from 'react-icons/io';
 
 import { SearchResultItem } from '../type';
 import AddToWatchList from './AddToWatchList';
-import { ProviderDictionary, WatchProvidersResponse } from './types';
+import { ProviderDictionary } from './types';
 
 type ResultModalProps = {
   result: SearchResultItem;
   title: string;
   isTV: boolean;
-  watchProviders: WatchProvidersResponse | null;
+  watchProviders: ProviderDictionary | null;
   subscriptions: Set<number>;
   handleAddClick: (resultItem: SearchResultItem) => void;
   handleRemoveClick: (resultItem: SearchResultItem) => void;
-  isInWatchList: Boolean;
+  isInWatchList: boolean;
 };
 
 const TMDB_IMAGE_URL = 'https://www.themoviedb.org/t/p/w500';
@@ -27,33 +27,10 @@ const ResultModal = ({
   handleRemoveClick,
   isInWatchList,
 }: ResultModalProps) => {
-  const generateProviderDictionary = (): ProviderDictionary => {
-    if (!watchProviders) {
-      return {};
-    }
-
-    const providerDictionary: ProviderDictionary = {};
-
-    for (const key in watchProviders) {
-      const providers =
-        watchProviders[key as keyof WatchProvidersResponse];
-
-      if (Array.isArray(providers)) {
-        providers.forEach((provider) => {
-          providerDictionary[provider.provider_id] = {
-            provider_name: provider.provider_name,
-            logo_path: provider.logo_path,
-            id: provider.provider_id,
-          };
-        });
-      }
-    }
-
-    return providerDictionary;
-  };
-
   const sortProviderList = () => {
-    const providerList = Object.values(generateProviderDictionary());
+    const providerList = watchProviders
+      ? Object.values(watchProviders)
+      : [];
 
     providerList.sort((a, b) => {
       const aInSubscriptions = subscriptions.has(a.id);

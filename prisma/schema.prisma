@@ -71,26 +71,38 @@ model Subscription {
 }
 
 model StreamingProvider {
-  id           Int            @id @default(autoincrement())
-  name         String
-  logoUrl      String
-  providerId   Int            @unique
-  Subscription Subscription[]
+  id                               Int                                @id @default(autoincrement())
+  name                             String
+  logoUrl                          String
+  providerId                       Int                                @unique
+  subscription                     Subscription[]
+  watchListItemOnStreamingProvider WatchListItemOnStreamingProvider[]
 
   @@map("streaming_provider")
 }
 
 model WatchListItem {
-  id               Int                @id @default(autoincrement())
-  mediaId          Int                @unique
-  mediaType        String
-  originalTitle    String?
-  posterPath       String
-  overview         String
-  originalName     String?
-  WatchListOnItems WatchListOnItems[]
+  id                                Int                                @id @default(autoincrement())
+  mediaId                           Int                                @unique
+  mediaType                         String
+  originalTitle                     String?
+  posterPath                        String
+  overview                          String
+  originalName                      String?
+  watchListOnItems                  WatchListOnItems[]
+  watchListItemOnStreamingProviders WatchListItemOnStreamingProvider[]
 
   @@map("watch_list_items")
+}
+
+model WatchListItemOnStreamingProvider {
+  watchListItemId     Int
+  streamingProviderId Int
+  watchListItem       WatchListItem     @relation(fields: [watchListItemId], references: [id], onDelete: Cascade)
+  streamingProvider   StreamingProvider @relation(fields: [streamingProviderId], references: [id], onDelete: Cascade)
+
+  @@id([watchListItemId, streamingProviderId])
+  @@map("watch_list_item_on_streaming_provider")
 }
 
 model WatchList {

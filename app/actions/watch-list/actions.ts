@@ -5,6 +5,7 @@ import { SearchResultItem } from '@/app/watch/type';
 import prisma from '@/prisma/client';
 import { User, WatchList, WatchListItem } from '@prisma/client';
 
+import { fetchWatchProviders } from '../search/actions';
 import { validateSessionUser } from '../utils';
 
 export const getOrCreateWatchList = async (
@@ -49,23 +50,37 @@ export const getOrCreateWatchList = async (
 };
 
 export const getUserWatchList = async (user: User) => {
-  let userWatchList = await prisma.watchList.findUnique({
+  const userWatchList = await prisma.watchList.findUnique({
     where: {
       userId: user.id,
     },
     include: {
       watchListOnItems: {
         include: {
-          watchListItem: true, // Fetch the full WatchListItem details
+          watchListItem: {
+            // Fetch the full WatchListItem details
+            include: {
+              watchListItemOnStreamingProviders: {
+                //Join table
+                include: {
+                  streamingProvider: true, // Fetch full StreamingProvider details
+                },
+              },
+            },
+          },
         },
       },
     },
   });
 
   return (
-    userWatchList?.watchListOnItems.map(
-      (item) => item.watchListItem
-    ) || null
+    userWatchList?.watchListOnItems.map((item) => ({
+      ...item.watchListItem,
+      streamingProviders:
+        item.watchListItem.watchListItemOnStreamingProviders.map(
+          (wp) => wp.streamingProvider
+        ),
+    })) || null
   );
 };
 
@@ -98,9 +113,49 @@ export const addToWatchList = async (
   item: SearchResultItem
 ): Promise<WatchListItem[]> => {
   const user = await validateSessionUser();
-
   const watchListItem = await getOrCreateWatchListItem(item);
   const watchList = await getOrCreateWatchList(user);
+
+  const existingProviders =
+    await prisma.watchListItemOnStreamingProvider.findMany({
+      where: { watchListItemId: watchListItem.id },
+      select: { streamingProviderId: true },
+    });
+
+  if (existingProviders.length === 0) {
+    const watchProviders = await fetchWatchProviders(
+      item.media_type,
+      item.id
+    );
+
+    const watchProviderIds = Object.keys(watchProviders).map(Number);
+    const streamingProviders =
+      await prisma.streamingProvider.findMany({
+        where: {
+          providerId: {
+            in: watchProviderIds,
+          },
+        },
+      });
+
+    await Promise.all(
+      streamingProviders.map((provider) =>
+        prisma.watchListItemOnStreamingProvider.upsert({
+          where: {
+            watchListItemId_streamingProviderId: {
+              watchListItemId: watchListItem.id,
+              streamingProviderId: provider.id,
+            },
+          },
+          update: {},
+          create: {
+            watchListItemId: watchListItem.id,
+            streamingProviderId: provider.id,
+          },
+        })
+      )
+    );
+  }
 
   await prisma.watchListOnItems.create({
     data: {
@@ -168,7 +223,7 @@ export const removeFromWatchList = async (
 
   const watchList = await prisma.watchList.findUnique({
     where: {
-      id: watchListOnItem.watchListId, // Use the watchListId from the join table
+      id: watchListOnItem.watchListId,
     },
     include: {
       watchListOnItems: {
