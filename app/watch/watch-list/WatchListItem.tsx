@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'motion/react';
+import { motion } from 'motion/react';
 import Image from 'next/image';
 import { FaCheck } from 'react-icons/fa6';
 import { ImTv } from 'react-icons/im';
