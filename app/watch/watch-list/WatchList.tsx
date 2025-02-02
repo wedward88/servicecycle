@@ -32,7 +32,7 @@ const WatchList = ({
         </p>
       ) : (
         <MotionTable
-          className="table table-md rounded-xl bg-base-200 mt-2"
+          className="table table-xs rounded-t-xl rounded-b-none bg-base-200 mt-2"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -42,6 +42,7 @@ const WatchList = ({
               <th />
               <th className="hidden md:block text-2xl">Poster</th>
               <th className="text-xl md:text-2xl">Name</th>
+              <th className="text-xl md:text-2xl"></th>
             </tr>
           </thead>
           <tbody>
@@ -56,6 +57,10 @@ const WatchList = ({
           </tbody>
         </MotionTable>
       )}
+      <p className=" w-full bg-base-200 rounded-b-xl p-5">
+        Note: A check mark indicates an active subscription for that
+        line item.
+      </p>
     </div>
   );
 };
