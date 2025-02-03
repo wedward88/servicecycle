@@ -7,6 +7,7 @@ import { useMainStore } from '@/app/store/providers/main-store-provider';
 import { Subscription } from '@/app/subscriptions/types';
 
 import { searchStreamingProvider } from '../../actions/actions';
+import Error from './components/Error';
 import InputList from './components/InputList';
 import { fieldType, StreamingProvider } from './types';
 
@@ -51,6 +52,7 @@ const Form = ({
     ? initialData.streamingProvider!.name
     : '';
   const [searchValue, setSearchValue] = useState(initialSearchVal);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const debouncedSearch = useDebouncedCallback(
     async (value: string) => {
@@ -71,14 +73,24 @@ const Form = ({
   const handleSubmit = async () => {
     if (initialData) {
       editSubscription(formData);
+      toggleModal();
     } else {
-      createSubscription(formData);
-      clearAllValues();
+      try {
+        await createSubscription(formData);
+        toggleModal();
+        clearAllValues();
+      } catch (error: any) {
+        if (error.name === 'Error') {
+          console.log(true);
+        }
+        setErrorMsg(error.message);
+      }
     }
   };
 
   const handleDelete = async () => {
     deleteSubscription(formData.id as number);
+    toggleModal();
     clearAllValues();
   };
 
@@ -96,7 +108,7 @@ const Form = ({
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { value } = e.target;
-
+    setErrorMsg(null);
     setSearchValue(value);
     debouncedSearch(value);
   };
@@ -116,6 +128,17 @@ const Form = ({
     if (modal && !modal.open) {
       modal.showModal();
     } else if (modal && modal.open) {
+      if (!errorMsg) {
+        if (!initialData) {
+          setSearchValue('');
+        }
+        modal.close();
+        return;
+      }
+      if (!initialData) {
+        setSearchValue('');
+      }
+      setErrorMsg(null);
       modal.close();
     }
   };
@@ -147,7 +170,6 @@ const Form = ({
             <form
               action={handleSubmit}
               className="flex flex-col space-y-5"
-              onSubmit={toggleModal}
             >
               <InputList
                 dropDownData={dropDownData}
@@ -158,6 +180,11 @@ const Form = ({
                 handleChange={handleChange}
                 resultOnClick={resultOnClick}
               />
+              {errorMsg ? (
+                <Error message={errorMsg} />
+              ) : (
+                <div className="alert opacity-0 h-12" />
+              )}
               <button type="submit" className="btn">
                 {submitText}
               </button>

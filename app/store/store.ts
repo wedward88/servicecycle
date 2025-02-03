@@ -7,6 +7,7 @@ import { createSubscription, deleteSubscription, editSubscription } from '../act
 import { addToWatchList, removeFromWatchList } from '../actions/watch-list/actions';
 import { SearchResultItemType } from '../watch/type';
 import { WatchListItemType } from '../watch/watch-list/type';
+import { SubscriptionError } from './SubscriptionError';
 
 export interface MainStoreInterface {
   watchListMediaIds: number[];
@@ -113,11 +114,11 @@ export const createMainStore = () => {
               }));
             } else {
               console.error(
-                'Failed to add item to the watch list, received null.'
+                'Failed to create subscription, received null.'
               );
             }
-          } catch (error) {
-            throw Error(`Unable to add item to watch list. ${error}`);
+          } catch (error: any) {
+            throw new SubscriptionError(error.message);
           }
         },
 

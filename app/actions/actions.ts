@@ -55,6 +55,17 @@ export async function createSubscription(formData: Subscription) {
 
   const { streamingProviderId, cost } = validation.data;
 
+  const existingSubscription = await prisma.subscription.findFirst({
+    where: {
+      userId: user.id,
+      streamingProviderId: streamingProviderId,
+    },
+  });
+
+  if (existingSubscription) {
+    throw new Error('Subscription already exists');
+  }
+
   let newSubscription;
   try {
     // Create the subscription in the database

@@ -67,6 +67,7 @@ model Subscription {
   streamingProvider   StreamingProvider @relation(fields: [streamingProviderId], references: [id])
   user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, streamingProviderId])
   @@map("subscriptions")
 }
 
