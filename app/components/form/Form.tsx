@@ -3,11 +3,10 @@ import clsx from 'clsx';
 import { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
+import { useMainStore } from '@/app/store/providers/main-store-provider';
 import { Subscription } from '@/app/subscriptions/types';
 
-import {
-    createSubscription, deleteSubscription, editSubscription, searchStreamingProvider
-} from '../../actions/actions';
+import { searchStreamingProvider } from '../../actions/actions';
 import InputList from './components/InputList';
 import { fieldType, StreamingProvider } from './types';
 
@@ -60,6 +59,9 @@ const Form = ({
     },
     DEBOUNCE_DELAY
   );
+
+  const { editSubscription, createSubscription, deleteSubscription } =
+    useMainStore((state) => state);
 
   const clearAllValues = () => {
     setSearchValue('');

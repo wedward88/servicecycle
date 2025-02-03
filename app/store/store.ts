@@ -3,6 +3,7 @@ import { createStore } from 'zustand/vanilla';
 
 import { DBSubscription, Subscription } from '@/app/subscriptions/types';
 
+import { createSubscription, deleteSubscription, editSubscription } from '../actions/actions';
 import { addToWatchList, removeFromWatchList } from '../actions/watch-list/actions';
 import { SearchResultItemType } from '../watch/type';
 import { WatchListItemType } from '../watch/watch-list/type';
@@ -16,6 +17,9 @@ export interface MainStoreInterface {
   subscriptions: Subscription[];
   subscriptionIds: number[];
   setSubscriptions: (newList: DBSubscription[]) => void;
+  createSubscription: (subscription: Subscription) => void;
+  deleteSubscription: (id: number) => void;
+  editSubscription: (subscription: Subscription) => void;
 }
 
 export const createMainStore = () => {
@@ -90,6 +94,63 @@ export const createMainStore = () => {
             subscriptions: newList,
             subscriptionIds: newList.map((item) => item.id),
           });
+        },
+
+        createSubscription: async (formData: Subscription) => {
+          try {
+            const addedItem: DBSubscription =
+              await createSubscription(formData);
+
+            if (addedItem) {
+              set((state) => ({
+                subscriptions: [...state.subscriptions, addedItem],
+                subscriptionIds: [
+                  ...state.subscriptionIds,
+                  addedItem.id,
+                ],
+              }));
+            } else {
+              console.error(
+                'Failed to add item to the watch list, received null.'
+              );
+            }
+          } catch (error) {
+            throw Error(`Unable to add item to watch list. ${error}`);
+          }
+        },
+
+        deleteSubscription: async (id: number) => {
+          try {
+            await deleteSubscription(id);
+
+            set((state) => ({
+              subscriptions: state.subscriptions.filter(
+                (item) => item.id !== id
+              ),
+              subscriptionIds: state.subscriptionIds.filter(
+                (subId) => subId !== id
+              ),
+            }));
+          } catch {
+            throw Error('Unable to delete subscription.');
+          }
+        },
+
+        editSubscription: async (formData: Subscription) => {
+          try {
+            await editSubscription(formData);
+
+            set((state) => ({
+              subscriptions: state.subscriptions.map((item) => {
+                if (item.id === formData.id) {
+                  return formData;
+                }
+                return item;
+              }),
+            }));
+          } catch {
+            throw Error('Unable to edit subscription.');
+          }
         },
       }),
       {

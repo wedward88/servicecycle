@@ -55,18 +55,16 @@ export async function createSubscription(formData: Subscription) {
 
   const { streamingProviderId, cost } = validation.data;
 
+  let newSubscription;
   try {
     // Create the subscription in the database
-    await prisma.subscription.create({
+    newSubscription = await prisma.subscription.create({
       data: {
         userId: user.id,
         cost,
         streamingProviderId: streamingProviderId,
       },
     });
-
-    // Revalidate the cache if needed
-    revalidatePath('/subscriptions');
   } catch (error: unknown) {
     if (error instanceof Error) {
       throw new Error(
@@ -76,6 +74,19 @@ export async function createSubscription(formData: Subscription) {
       throw new Error('Failed to create subscription: Unknown error');
     }
   }
+
+  const newSubWithProvider = await prisma.subscription.findUnique({
+    where: {
+      id: newSubscription.id,
+    },
+    include: {
+      streamingProvider: true,
+    },
+  });
+
+  if (!newSubWithProvider)
+    throw new Error('Failed to create subscription');
+  return newSubWithProvider;
 }
 
 export async function editSubscription(formData: Subscription) {
