@@ -25,14 +25,13 @@ jobs:
         run: npm run build
 
       - name: Set up SSH key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          echo "$SSH_PRIVATE_KEY_BASE64" | base64 --decode > private_key.pem
+          echo -e "$SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
-
-      - name: Debug Private Key
-        run: |
-          file private_key.pem
           ls -lah private_key.pem
+          file private_key.pem
           cat private_key.pem | head -n 5
 
       - name: Deploy to server
