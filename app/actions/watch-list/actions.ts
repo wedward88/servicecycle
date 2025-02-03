@@ -157,14 +157,17 @@ export const addToWatchList = async (
     );
   }
 
-  await prisma.watchListOnItems.create({
-    data: {
-      watchList: {
-        connect: { id: watchList.id },
+  await prisma.watchListOnItems.upsert({
+    where: {
+      watchListId_watchListItemId: {
+        watchListId: watchList.id,
+        watchListItemId: watchListItem.id,
       },
-      watchListItem: {
-        connect: { id: watchListItem.id },
-      },
+    },
+    update: {},
+    create: {
+      watchList: { connect: { id: watchList.id } },
+      watchListItem: { connect: { id: watchListItem.id } },
     },
   });
 
