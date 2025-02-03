@@ -100,6 +100,7 @@ export const createMainStore = () => {
         },
 
         createSubscription: async (formData: Subscription) => {
+          /* eslint-disable @typescript-eslint/no-explicit-any */
           try {
             const addedItem: DBSubscription =
               await createSubscription(formData);

@@ -58,6 +58,7 @@ jobs:
             cd ~/dev/servicecycle
             git pull
             npm install
+            npx prisma migrate dev
             npm run build
             pm2 restart servicecycle --update-env
           EOF

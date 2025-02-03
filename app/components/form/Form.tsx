@@ -71,6 +71,7 @@ const Form = ({
   };
 
   const handleSubmit = async () => {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     if (initialData) {
       editSubscription(formData);
       toggleModal();

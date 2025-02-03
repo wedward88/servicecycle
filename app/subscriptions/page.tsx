@@ -34,7 +34,7 @@ const SubscriptionPage = () => {
     };
 
     fetchUserSubscriptions();
-  }, [session, setSubscriptions]);
+  }, [session, status, setSubscriptions]);
 
   const noSubs = subscriptions.length === 0;
 

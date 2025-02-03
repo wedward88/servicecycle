@@ -1,5 +1,4 @@
 import { motion } from 'motion/react';
-import { isAbsolute } from 'path';
 
 const MotionDiv = motion.div;
 const Error = ({ message }: { message: string }) => {
