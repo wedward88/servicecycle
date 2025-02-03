@@ -32,6 +32,6 @@ jobs:
 
       - name: Deploy to server
         run: |
-          ssh -i ~/.ssh/id_rsa StrictHostKeyChecking=no root@23.94.83.27 "cd ~/dev/servicecycle && git pull && npm install && npm run build && pm2 restart servicecycle --update-env"
+          ssh -i ~/.ssh/id_rsa root@23.94.83.27 "cd ~/dev/servicecycle && git pull && npm install && npm run build && pm2 restart servicecycle --update-env"
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
