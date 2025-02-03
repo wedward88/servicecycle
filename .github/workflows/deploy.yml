@@ -26,13 +26,11 @@ jobs:
 
       - name: Set up SSH key
         run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 23.94.83.27 >> ~/.ssh/known_hosts
+          echo "$SSH_PRIVATE_KEY" > private_key.pem
+          chmod 600 private_key.pem
 
       - name: Deploy to server
-        run: |
-          ssh -i ~/.ssh/id_rsa root@23.94.83.27 "cd ~/dev/servicecycle && git pull && npm install && npm run build && pm2 restart servicecycle --update-env"
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          ssh -o StrictHostKeyChecking=no -i private_key.pem root@23.94.83.27 "cd ~/dev/servicecycle && git pull && npm install && npm run build && pm2 restart servicecycle --update-env"
