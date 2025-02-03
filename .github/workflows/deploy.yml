@@ -35,7 +35,14 @@ jobs:
           cat private_key.pem | head -n 5
 
       - name: Deploy to server
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          ssh -vvv -o StrictHostKeyChecking=no -i private_key.pem -o IdentitiesOnly=yes root@23.94.83.27 "cd ~/dev/servicecycle && git pull && npm install && npm run build && pm2 restart servicecycle --update-env"
+          ssh -o StrictHostKeyChecking=no root@23.94.83.27 << 'EOF'
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use 18
+            cd ~/dev/servicecycle
+            git pull
+            npm install
+            npm run build
+            pm2 restart servicecycle --update-env
+          EOF
