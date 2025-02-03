@@ -10,12 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Debug Private Key
-        run: |
-          file private_key.pem
-          ls -lah private_key.pem
-          cat private_key.pem | head -n 5
-
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -34,6 +28,12 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY_BASE64" | base64 --decode > private_key.pem
           chmod 600 private_key.pem
+
+      - name: Debug Private Key
+        run: |
+          file private_key.pem
+          ls -lah private_key.pem
+          cat private_key.pem | head -n 5
 
       - name: Deploy to server
         env:
