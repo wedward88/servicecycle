@@ -24,6 +24,13 @@ jobs:
       - name: Build ServiceCycle
         run: npm run build
 
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 23.94.83.27 >> ~/.ssh/known_hosts
+
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no root@23.94.83.27 "cd ~/dev/servicecycle && git pull && npm install && npm run build && pm2 restart servicecycle --update-env"
