@@ -10,6 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Debug Private Key
+        run: |
+          file private_key.pem
+          ls -lah private_key.pem
+          cat private_key.pem | head -n 5
+
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -33,4 +39,4 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          ssh -o StrictHostKeyChecking=no -i private_key.pem root@23.94.83.27 "cd ~/dev/servicecycle && git pull && npm install && npm run build && pm2 restart servicecycle --update-env"
+          ssh -vvv -o StrictHostKeyChecking=no -i private_key.pem -o IdentitiesOnly=yes root@23.94.83.27 "cd ~/dev/servicecycle && git pull && npm install && npm run build && pm2 restart servicecycle --update-env"
