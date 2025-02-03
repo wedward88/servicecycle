@@ -1,0 +1,31 @@
+name: Deploy ServiceCycle
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build ServiceCycle
+        run: npm run build
+
+      - name: Deploy to server
+        run: |
+          ssh -o StrictHostKeyChecking=no root@23.94.83.27 "cd /path/to/your/project && git pull && npm install && npm run build && pm2 restart servicecycle --update-env"
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
