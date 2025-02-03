@@ -1,18 +1,17 @@
 import clsx from 'clsx';
 import { IoMdCloseCircleOutline } from 'react-icons/io';
 
-import { SearchResultItem } from '../type';
+import { useMainStore } from '@/app/store/providers/main-store-provider';
+
+import { SearchResultItemType } from '../type';
 import AddToWatchList from './AddToWatchList';
 import { ProviderDictionary } from './types';
 
 type ResultModalProps = {
-  result: SearchResultItem;
+  result: SearchResultItemType;
   title: string;
   isTV: boolean;
   watchProviders: ProviderDictionary | null;
-  subscriptions: Set<number>;
-  handleAddClick: (resultItem: SearchResultItem) => void;
-  handleRemoveClick: (resultItem: SearchResultItem) => void;
   isInWatchList: boolean;
 };
 
@@ -22,19 +21,18 @@ const ResultModal = ({
   result,
   title,
   watchProviders,
-  subscriptions,
-  handleAddClick,
-  handleRemoveClick,
   isInWatchList,
 }: ResultModalProps) => {
+  const { subscriptionIds } = useMainStore((store) => store);
+  const subscriptionSet = new Set(subscriptionIds);
   const sortProviderList = () => {
     const providerList = watchProviders
       ? Object.values(watchProviders)
       : [];
 
     providerList.sort((a, b) => {
-      const aInSubscriptions = subscriptions.has(a.id);
-      const bInSubscriptions = subscriptions.has(b.id);
+      const aInSubscriptions = subscriptionSet.has(a.id);
+      const bInSubscriptions = subscriptionSet.has(b.id);
 
       if (aInSubscriptions && !bInSubscriptions) return -1;
       if (!aInSubscriptions && bInSubscriptions) return 1;
@@ -60,7 +58,7 @@ const ResultModal = ({
                   title={provider.provider_name}
                   className={clsx(
                     'w-10 rounded-xl h-full',
-                    !subscriptions.has(provider.id) && 'opacity-20'
+                    !subscriptionSet.has(provider.id) && 'opacity-20'
                   )}
                 />
               </li>
@@ -93,10 +91,9 @@ const ResultModal = ({
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-lg">{title}</h3>
               <AddToWatchList
-                isInWatchList={isInWatchList}
-                onAdd={() => handleAddClick(result)}
-                onRemove={() => handleRemoveClick(result)}
                 className="text-4xl text-white hover:cursor-pointer"
+                isInWatchList={isInWatchList}
+                result={result}
               />
             </div>
             <p className="py-2">{result.overview}</p>

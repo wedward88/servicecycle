@@ -2,26 +2,20 @@
 import clsx from 'clsx';
 import { motion } from 'motion/react';
 
+import { useMainStore } from '../store/providers/main-store-provider';
 import ResultCard from './components/ResultCard';
-import { SearchResultItem } from './type';
+import { SearchResultItemType } from './type';
 
 type SearchResultsProps = {
-  searchResults: SearchResultItem[];
-  subscriptions: Set<number>;
-  handleAddClick: (resultItem: SearchResultItem) => void;
-  handleRemoveClick: (resultItem: SearchResultItem) => void;
-  getWatchListSet: () => Set<number>;
+  searchResults: SearchResultItemType[];
 };
 const MotionUl = motion.ul;
 const MotionLi = motion.li;
 
-const SearchResults = ({
-  searchResults,
-  subscriptions,
-  handleAddClick,
-  handleRemoveClick,
-  getWatchListSet,
-}: SearchResultsProps) => {
+const SearchResults = ({ searchResults }: SearchResultsProps) => {
+  const { watchListMediaIds } = useMainStore((state) => state);
+  const watchListSet = new Set(watchListMediaIds);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
@@ -41,11 +35,8 @@ const SearchResults = ({
           whileHover={{ scale: 1.05 }}
         >
           <ResultCard
-            isInWatchList={getWatchListSet().has(result.id)}
-            subscriptions={subscriptions}
+            isInWatchList={watchListSet.has(result.id)}
             result={result}
-            handleAddClick={handleAddClick}
-            handleRemoveClick={handleRemoveClick}
           />
         </MotionLi>
       );

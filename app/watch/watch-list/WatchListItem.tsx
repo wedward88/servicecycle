@@ -1,3 +1,4 @@
+'use client';
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import { FaCheck } from 'react-icons/fa6';
@@ -5,12 +6,12 @@ import { ImTv } from 'react-icons/im';
 import { MdLocalMovies } from 'react-icons/md';
 import { RiDeleteBin6Fill } from 'react-icons/ri';
 
+import { useMainStore } from '@/app/store/providers/main-store-provider';
+
 import { WatchListItemType } from './type';
 
 interface WatchListItemProps {
   item: WatchListItemType;
-  handleRemoveClick: (resultItem: WatchListItemType) => void;
-  subscriptions: Set<number>;
 }
 
 const MotionTr = motion.tr;
@@ -27,15 +28,15 @@ const itemVariants = {
 };
 const baseImageURL = 'https://www.themoviedb.org/t/p/w500';
 
-const WatchListItem = ({
-  item,
-  subscriptions,
-  handleRemoveClick,
-}: WatchListItemProps) => {
+const WatchListItem = ({ item }: WatchListItemProps) => {
+  const { subscriptionIds, removeFromWatchList } = useMainStore(
+    (state) => state
+  );
+  const subscriptionSet = new Set(subscriptionIds);
   const isSubscribed =
     item.streamingProviders &&
     item.streamingProviders.some((provider) =>
-      subscriptions.has(provider.providerId)
+      subscriptionSet.has(provider.id)
     );
 
   return (
@@ -77,7 +78,7 @@ const WatchListItem = ({
       <td className="text-2xl md:text-3xl">
         <RiDeleteBin6Fill
           className="hover:cursor-pointer hover:text-red-400"
-          onClick={() => handleRemoveClick(item)}
+          onClick={() => removeFromWatchList(item.mediaId)}
         />
       </td>
     </MotionTr>

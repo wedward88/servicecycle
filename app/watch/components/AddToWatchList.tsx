@@ -1,24 +1,33 @@
+'use client';
 import { CiCircleCheck, CiCirclePlus } from 'react-icons/ci';
 
+import { useMainStore } from '@/app/store/providers/main-store-provider';
+
+import { SearchResultItemType } from '../type';
+
 interface AddToWatchListProps {
-  onAdd: () => void;
-  onRemove: () => void;
+  result: SearchResultItemType;
   isInWatchList: boolean;
   className: string;
 }
 
 const AddToWatchList = ({
-  onAdd,
-  onRemove,
+  result,
   isInWatchList,
   className,
 }: AddToWatchListProps) => {
+  const { addToWatchList, removeFromWatchList } = useMainStore(
+    (state) => state
+  );
+
   return (
     <div className={className}>
       {isInWatchList ? (
-        <CiCircleCheck onClick={onRemove} />
+        <CiCircleCheck
+          onClick={() => removeFromWatchList(result.id)}
+        />
       ) : (
-        <CiCirclePlus onClick={onAdd} />
+        <CiCirclePlus onClick={() => addToWatchList(result)} />
       )}
     </div>
   );
