@@ -1,7 +1,7 @@
 'use server';
-import { revalidatePath } from 'next/cache';
 
-import { SearchResultItem } from '@/app/watch/type';
+import { SearchResultItemType } from '@/app/watch/type';
+import { WatchListItemType } from '@/app/watch/watch-list/type';
 import prisma from '@/prisma/client';
 import { User, WatchList, WatchListItem } from '@prisma/client';
 
@@ -85,7 +85,7 @@ export const getUserWatchList = async (user: User) => {
 };
 
 const getOrCreateWatchListItem = async (
-  item: SearchResultItem
+  item: SearchResultItemType
 ): Promise<WatchListItem> => {
   let watchListItem = await prisma.watchListItem.findUnique({
     where: {
@@ -110,11 +110,11 @@ const getOrCreateWatchListItem = async (
 };
 
 export const addToWatchList = async (
-  item: SearchResultItem
-): Promise<WatchListItem[]> => {
+  item: SearchResultItemType
+): Promise<WatchListItemType | null> => {
   const user = await validateSessionUser();
-  const watchListItem = await getOrCreateWatchListItem(item);
   const watchList = await getOrCreateWatchList(user);
+  const watchListItem = await getOrCreateWatchListItem(item);
 
   const existingProviders =
     await prisma.watchListItemOnStreamingProvider.findMany({
@@ -124,8 +124,8 @@ export const addToWatchList = async (
 
   if (existingProviders.length === 0) {
     const watchProviders = await fetchWatchProviders(
-      item.media_type,
-      item.id
+      watchListItem.mediaType,
+      watchListItem.mediaId
     );
 
     const watchProviderIds = Object.keys(watchProviders).map(Number);
@@ -168,23 +168,30 @@ export const addToWatchList = async (
     },
   });
 
-  const updatedWatchList = await prisma.watchList.findUnique({
-    where: { id: watchList.id },
+  const updatedWatchListItem = await prisma.watchListItem.findUnique({
+    where: { id: watchListItem.id },
     include: {
-      watchListOnItems: {
+      watchListItemOnStreamingProviders: {
         include: {
-          watchListItem: true,
+          streamingProvider: true,
         },
       },
     },
   });
 
-  revalidatePath('/search');
-  return (
-    updatedWatchList?.watchListOnItems.map(
-      (item) => item.watchListItem
-    ) || []
-  );
+  if (!updatedWatchListItem) {
+    throw new Error('WatchListItem not found');
+  }
+
+  const updatedItemWithProviders: WatchListItemType = {
+    ...updatedWatchListItem,
+    streamingProviders:
+      updatedWatchListItem.watchListItemOnStreamingProviders.map(
+        (entry) => entry.streamingProvider
+      ),
+  };
+
+  return updatedItemWithProviders;
 };
 
 export const removeFromWatchList = async (
@@ -234,7 +241,6 @@ export const removeFromWatchList = async (
     },
   });
 
-  revalidatePath('/search');
   return (
     watchList?.watchListOnItems.map((item) => item.watchListItem) ??
     []

@@ -1,28 +1,42 @@
-import { getUserSubscriptions } from '../actions/actions';
+'use client';
+import { useEffect } from 'react';
+
 import { validateSessionUser } from '../actions/utils';
+import { getUserWatchList } from '../actions/watch-list/actions';
+import { useMainStore } from '../store/providers/main-store-provider';
 import SearchSection from './SearchSection';
+import WatchList from './watch-list/WatchList';
 
-const SearchPage = async () => {
-  const user = await validateSessionUser();
+const SearchPage = () => {
+  const { setUserWatchList } = useMainStore((state) => state);
 
-  if (!user) {
-    throw new Error('User not found.');
-  }
-  const userSubs = await getUserSubscriptions(user.email!);
+  useEffect(() => {
+    const fetchUserWatchList = async () => {
+      const user = await validateSessionUser();
 
-  if (!userSubs) {
-    throw new Error('Failed to fetch user subscriptions');
-  }
+      if (!user) {
+        throw new Error('User not found.');
+      }
 
-  const subscriptions: Set<number> = new Set();
+      try {
+        const watchList = await getUserWatchList(user);
+        if (watchList) {
+          setUserWatchList(watchList);
+        }
+      } catch (error) {
+        console.error('Error fetching user watchlist:', error);
+      }
+    };
 
-  for (const item of userSubs.subscriptions) {
-    subscriptions.add(item.streamingProvider.providerId);
-  }
+    fetchUserWatchList();
+  }, [setUserWatchList]);
 
   return (
     <div className="flex flex-col items-start md:items-center lg:items-center space-y-10">
-      <SearchSection user={user} subscriptions={subscriptions} />
+      <div className="flex flex-col items-center xl:items-start mt-10 w-full md:w-[90vw] space-y-5 xl:space-y-0 xl:space-x-5 xl:flex-row">
+        <WatchList />
+        <SearchSection />
+      </div>
     </div>
   );
 };

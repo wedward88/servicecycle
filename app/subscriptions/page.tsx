@@ -1,29 +1,47 @@
-import { getServerSession } from 'next-auth';
+'use client';
+import { useSession } from 'next-auth/react';
+import { useEffect } from 'react';
 
 import { getUserSubscriptions } from '../actions/actions';
 import SubForm from '../components/form/Form';
 import { SubscriptionFormFields } from '../components/form/FormManifest';
-import { authOptions } from '../utils/authOptions';
+import { useMainStore } from '../store/providers/main-store-provider';
 import SubTable from './SubTable';
 import SubTotal from './SubTotal';
 
-const SubscriptionPage = async () => {
-  const session = await getServerSession(authOptions);
+const SubscriptionPage = () => {
+  const { subscriptions, setSubscriptions } = useMainStore(
+    (state) => state
+  );
 
-  if (!session?.user?.email) {
-    throw new Error('User not authenticated');
-  }
+  const { data: session, status } = useSession();
 
-  // Get user and their subscriptions
-  const userSubs = await getUserSubscriptions(session?.user?.email);
+  useEffect(() => {
+    if (status === 'loading') {
+      return;
+    }
 
-  const subs = userSubs?.subscriptions || [];
-  const noSubs = subs.length === 0;
+    const fetchUserSubscriptions = async () => {
+      const userEmail = session?.user?.email;
+      // Get user and their subscriptions
+      if (typeof userEmail === 'string') {
+        const userSubs = await getUserSubscriptions(userEmail);
+        const subs = userSubs?.subscriptions || [];
+        setSubscriptions(subs);
+      } else {
+        console.error('User email is not available');
+      }
+    };
+
+    fetchUserSubscriptions();
+  }, [session, setSubscriptions]);
+
+  const noSubs = subscriptions.length === 0;
 
   return (
     <div className="flex flex-col items-center space-y-10 mt-5">
       <h1 className="flex w-full text-3xl items-start md:justify-center lg:justify-center">
-        {userSubs!.name}&apos;s subscriptions
+        {session?.user?.name}&apos;s subscriptions
       </h1>
       <div className="flex flex-col items-start">
         <div className="flex items-center text-2xl">
@@ -38,8 +56,8 @@ const SubscriptionPage = async () => {
         </div>
         {!noSubs && (
           <div>
-            <SubTable userSubscriptions={subs} />
-            <SubTotal userSubscriptions={subs} />
+            <SubTable userSubscriptions={subscriptions} />
+            <SubTotal userSubscriptions={subscriptions} />
           </div>
         )}
       </div>

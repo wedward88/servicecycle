@@ -1,6 +1,5 @@
-export type SearchResultItem = {
+export type SearchResultItemType = {
   id: number;
-  mediaId: number;
   media_type: string;
   original_name: string;
   original_title: string;

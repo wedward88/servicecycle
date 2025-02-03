@@ -6,7 +6,7 @@ import { MdLocalMovies } from 'react-icons/md';
 
 import { fetchWatchProviders } from '@/app/actions/search/actions';
 
-import { SearchResultItem } from '../type';
+import { SearchResultItemType } from '../type';
 import AddToWatchList from './AddToWatchList';
 import ResultModal from './ResultModal';
 import { ProviderDictionary } from './types';
@@ -14,20 +14,11 @@ import { ProviderDictionary } from './types';
 const baseImageURL = 'https://www.themoviedb.org/t/p/w500';
 
 type ResultCardProps = {
-  result: SearchResultItem;
-  subscriptions: Set<number>;
+  result: SearchResultItemType;
   isInWatchList: boolean;
-  handleAddClick: (resultItem: SearchResultItem) => void;
-  handleRemoveClick: (resultItem: SearchResultItem) => void;
 };
 
-const ResultCard = ({
-  result,
-  subscriptions,
-  isInWatchList,
-  handleAddClick,
-  handleRemoveClick,
-}: ResultCardProps) => {
+const ResultCard = ({ result, isInWatchList }: ResultCardProps) => {
   const [watchProviders, setWatchProviders] =
     useState<ProviderDictionary | null>(null);
 
@@ -47,10 +38,9 @@ const ResultCard = ({
   return (
     <div className="relative w-full">
       <AddToWatchList
-        isInWatchList={isInWatchList}
-        onAdd={() => handleAddClick(result)}
-        onRemove={() => handleRemoveClick(result)}
         className="absolute top-2 right-2 text-5xl rounded-badge backdrop-contrast-200 backdrop-blur-lg hover:cursor-pointer z-10"
+        isInWatchList={isInWatchList}
+        result={result}
       />
       <div
         onClick={() => resultClick(result.media_type, result.id)}
@@ -77,9 +67,6 @@ const ResultCard = ({
         title={title}
         isTV={isTV}
         watchProviders={watchProviders}
-        subscriptions={subscriptions}
-        handleAddClick={handleAddClick}
-        handleRemoveClick={handleRemoveClick}
         isInWatchList={isInWatchList}
       />
     </div>
