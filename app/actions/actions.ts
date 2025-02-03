@@ -130,8 +130,9 @@ export async function editSubscription(formData: Subscription) {
 export async function deleteSubscription(id: number) {
   await validateSessionUser();
 
+  let deletedSubscription;
   try {
-    await prisma.subscription.delete({
+    deletedSubscription = await prisma.subscription.delete({
       where: {
         id,
       },
@@ -147,4 +148,9 @@ export async function deleteSubscription(id: number) {
       throw new Error('Failed to delete subscription: Unknown error');
     }
   }
+
+  if (!deletedSubscription)
+    throw new Error('Failed to delete subscription');
+
+  return deletedSubscription;
 }

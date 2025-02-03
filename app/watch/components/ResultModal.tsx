@@ -73,7 +73,7 @@ const ResultModal = ({
     <div>
       <dialog
         id={`modal-${result.id}`}
-        className="modal modal-bottom sm:modal-middle"
+        className="modal modal-bottom sm:modal-middle max-h-[100vh] max-w-[100vw]"
       >
         <div className="modal-box p-0">
           <img

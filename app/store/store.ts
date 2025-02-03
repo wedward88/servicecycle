@@ -92,7 +92,9 @@ export const createMainStore = () => {
         setSubscriptions: (newList: DBSubscription[]) => {
           set({
             subscriptions: newList,
-            subscriptionIds: newList.map((item) => item.id),
+            subscriptionIds: newList
+              .map((item) => item.streamingProviderId)
+              .filter((id): id is number => id !== undefined),
           });
         },
 
@@ -106,8 +108,8 @@ export const createMainStore = () => {
                 subscriptions: [...state.subscriptions, addedItem],
                 subscriptionIds: [
                   ...state.subscriptionIds,
-                  addedItem.id,
-                ],
+                  addedItem.id !== undefined ? addedItem.id : -1,
+                ].filter((id) => id !== undefined),
               }));
             } else {
               console.error(
@@ -121,14 +123,16 @@ export const createMainStore = () => {
 
         deleteSubscription: async (id: number) => {
           try {
-            await deleteSubscription(id);
+            const deletedSubscription = await deleteSubscription(id);
 
             set((state) => ({
               subscriptions: state.subscriptions.filter(
                 (item) => item.id !== id
               ),
               subscriptionIds: state.subscriptionIds.filter(
-                (subId) => subId !== id
+                (providerId) =>
+                  providerId !==
+                  deletedSubscription.streamingProviderId
               ),
             }));
           } catch {
