@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth';
 
 import prisma from '@/prisma/client';
 
-import { authOptions } from '../utils/authOptions';
+import { authOptions } from '../lib/utils/authOptions';
 
 export const validateSessionUser = async () => {
   const session = await getServerSession(authOptions);

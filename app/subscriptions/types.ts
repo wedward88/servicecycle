@@ -12,3 +12,18 @@ export type Subscription = {
       }
     | undefined;
 };
+
+export type DBSubscription = {
+  id: number;
+  userId: string;
+  cost?: string | null;
+  streamingProviderId: number | undefined;
+  streamingProvider:
+    | {
+        id: number;
+        name: string;
+        logoUrl: string;
+        providerId: number;
+      }
+    | undefined;
+};
