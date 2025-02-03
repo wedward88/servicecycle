@@ -6,10 +6,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { Subscription } from '@/app/subscriptions/types';
 
 import {
-  createSubscription,
-  deleteSubscription,
-  editSubscription,
-  searchStreamingProvider,
+    createSubscription, deleteSubscription, editSubscription, searchStreamingProvider
 } from '../../actions/actions';
 import InputList from './components/InputList';
 import { fieldType, StreamingProvider } from './types';

@@ -39,12 +39,12 @@ const SubscriptionPage = () => {
   const noSubs = subscriptions.length === 0;
 
   return (
-    <div className="flex flex-col items-center space-y-10 mt-5">
-      <h1 className="flex w-full text-3xl items-start md:justify-center lg:justify-center">
+    <div className="flex flex-col items-start md:items-center space-y-10 mt-5">
+      <h1 className="flex w-full text-2xl md:text-3xl items-start md:justify-center">
         {session?.user?.name}&apos;s subscriptions
       </h1>
       <div className="flex flex-col items-start">
-        <div className="flex items-center text-2xl">
+        <div className="flex items-center text-xl md:text-2xl">
           {noSubs && 'Click'}
           <SubForm
             formTitle="Create New Subscription"
