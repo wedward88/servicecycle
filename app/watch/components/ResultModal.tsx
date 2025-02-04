@@ -31,6 +31,7 @@ const ResultModal = ({
       : [];
 
     providerList.sort((a, b) => {
+      console.log({ a, b });
       const aInSubscriptions = subscriptionSet.has(a.id);
       const bInSubscriptions = subscriptionSet.has(b.id);
 

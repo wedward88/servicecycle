@@ -1,3 +1,5 @@
+'use client';
+
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { createStore } from 'zustand/vanilla';
 
@@ -7,7 +9,6 @@ import { createSubscription, deleteSubscription, editSubscription } from '../act
 import { addToWatchList, removeFromWatchList } from '../actions/watch-list/actions';
 import { SearchResultItemType } from '../watch/type';
 import { WatchListItemType } from '../watch/watch-list/type';
-import { SubscriptionError } from './SubscriptionError';
 
 export interface MainStoreInterface {
   watchListMediaIds: number[];
@@ -18,7 +19,9 @@ export interface MainStoreInterface {
   subscriptions: Subscription[];
   subscriptionIds: number[];
   setSubscriptions: (newList: DBSubscription[]) => void;
-  createSubscription: (subscription: Subscription) => void;
+  createSubscription: (
+    subscription: Subscription
+  ) => Promise<{ success: boolean; error?: string }>;
   deleteSubscription: (id: number) => void;
   editSubscription: (subscription: Subscription) => void;
 }
@@ -94,7 +97,7 @@ export const createMainStore = () => {
           set({
             subscriptions: newList,
             subscriptionIds: newList
-              .map((item) => item.streamingProviderId)
+              .map((item) => item.streamingProvider?.providerId)
               .filter((id): id is number => id !== undefined),
           });
         },
@@ -110,16 +113,16 @@ export const createMainStore = () => {
                 subscriptions: [...state.subscriptions, addedItem],
                 subscriptionIds: [
                   ...state.subscriptionIds,
-                  addedItem.id !== undefined ? addedItem.id : -1,
+                  addedItem.streamingProvider?.providerId,
                 ].filter((id) => id !== undefined),
               }));
-            } else {
-              console.error(
-                'Failed to create subscription, received null.'
-              );
             }
-          } catch (error: any) {
-            throw new SubscriptionError(error.message);
+            return { success: true };
+          } catch {
+            return {
+              success: false,
+              error: 'Subscription already exists.',
+            };
           }
         },
 
@@ -134,7 +137,7 @@ export const createMainStore = () => {
               subscriptionIds: state.subscriptionIds.filter(
                 (providerId) =>
                   providerId !==
-                  deletedSubscription.streamingProviderId
+                  deletedSubscription.streamingProvider.providerId
               ),
             }));
           } catch {

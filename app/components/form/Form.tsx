@@ -76,15 +76,14 @@ const Form = ({
       editSubscription(formData);
       toggleModal();
     } else {
-      try {
-        await createSubscription(formData);
-        toggleModal();
+      const result = await createSubscription(formData);
+
+      if (result && result.error) {
+        setErrorMsg(result.error);
+        return;
+      } else {
         clearAllValues();
-      } catch (error: any) {
-        if (error.name === 'Error') {
-          console.log(true);
-        }
-        setErrorMsg(error.message);
+        toggleModal();
       }
     }
   };

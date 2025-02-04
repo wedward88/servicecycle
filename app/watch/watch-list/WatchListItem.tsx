@@ -36,7 +36,7 @@ const WatchListItem = ({ item }: WatchListItemProps) => {
   const isSubscribed =
     item.streamingProviders &&
     item.streamingProviders.some((provider) =>
-      subscriptionSet.has(provider.id)
+      subscriptionSet.has(provider.providerId)
     );
 
   return (

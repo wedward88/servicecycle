@@ -97,6 +97,7 @@ export async function createSubscription(formData: Subscription) {
 
   if (!newSubWithProvider)
     throw new Error('Failed to create subscription');
+
   return newSubWithProvider;
 }
 
@@ -147,9 +148,10 @@ export async function deleteSubscription(id: number) {
       where: {
         id,
       },
+      include: {
+        streamingProvider: true,
+      },
     });
-
-    revalidatePath('/subscriptions');
   } catch (error: unknown) {
     if (error instanceof Error) {
       throw new Error(
