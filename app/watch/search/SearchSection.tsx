@@ -1,11 +1,11 @@
 'use client';
-
 import { useState } from 'react';
 import { FaCircleXmark } from 'react-icons/fa6';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { fetchTMDBResults } from '../actions/search/actions';
-import LoadingSkeleton from './LoadingSkeleton';
+import { fetchTMDBResults } from '@/app/actions/search/actions';
+
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import SearchResults from './SearchResults';
 
 const DEBOUNCE_DELAY = 500;

@@ -1,3 +1,8 @@
+export type StreamingProviderType = {
+  name: string;
+  logoUrl: string;
+  providerId: number;
+};
 export type WatchListItemType = {
   id: number;
   mediaId: number;
@@ -6,10 +11,5 @@ export type WatchListItemType = {
   originalName: string | null;
   posterPath: string;
   overview: string;
-  streamingProviders?: {
-    id: number;
-    name: string;
-    logoUrl: string;
-    providerId: number;
-  }[];
+  streamingProviders: StreamingProviderType[];
 };

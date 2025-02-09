@@ -2,9 +2,10 @@
 import clsx from 'clsx';
 import { motion } from 'motion/react';
 
-import { useMainStore } from '../store/providers/main-store-provider';
-import ResultCard from './components/ResultCard';
-import { SearchResultItemType } from './type';
+import { useMainStore } from '@/app/store/providers/main-store-provider';
+
+import ResultCard from '../components/ResultCard';
+import { SearchResultItemType } from './types';
 
 type SearchResultsProps = {
   searchResults: SearchResultItemType[];

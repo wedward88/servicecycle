@@ -6,10 +6,11 @@ import { MdLocalMovies } from 'react-icons/md';
 
 import { fetchWatchProviders } from '@/app/actions/search/actions';
 
-import { SearchResultItemType } from '../type';
+import { SearchResultItemType } from '../search/types';
+import { WatchListItemType } from '../watch-list/types';
 import AddToWatchList from './AddToWatchList';
 import ResultModal from './ResultModal';
-import { ProviderDictionary } from './types';
+import { mapSearchResultToWatchListItem } from './utils/util';
 
 const baseImageURL = 'https://www.themoviedb.org/t/p/w500';
 
@@ -19,13 +20,16 @@ type ResultCardProps = {
 };
 
 const ResultCard = ({ result, isInWatchList }: ResultCardProps) => {
-  const [watchProviders, setWatchProviders] =
-    useState<ProviderDictionary | null>(null);
+  const [searchResult, setSearchResult] = useState<WatchListItemType>(
+    mapSearchResultToWatchListItem(result, [])
+  );
 
   const resultClick = async (type: string, id: number) => {
     const wp = await fetchWatchProviders(type, id);
-    setWatchProviders(wp);
-    const modal = document.getElementById(`modal-${id}`);
+    const watchResult = mapSearchResultToWatchListItem(result, wp);
+    setSearchResult(watchResult);
+
+    const modal = document.getElementById(`search-modal-${id}`);
 
     if (modal) {
       (modal as HTMLDialogElement).showModal();
@@ -63,11 +67,12 @@ const ResultCard = ({ result, isInWatchList }: ResultCardProps) => {
         </div>
       </div>
       <ResultModal
-        result={result}
+        result={searchResult}
         title={title}
         isTV={isTV}
-        watchProviders={watchProviders}
+        watchProviders={searchResult.streamingProviders}
         isInWatchList={isInWatchList}
+        watchModal={false}
       />
     </div>
   );
