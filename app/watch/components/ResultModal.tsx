@@ -83,13 +83,15 @@ const ResultModal = ({
         className="modal modal-bottom sm:modal-middle max-h-[100vh] max-w-[100vw]"
       >
         <div className="modal-box p-0">
-          <Image
-            src={`https://www.themoviedb.org/t/p/w500${result.posterPath}`}
-            width={500}
-            height={500}
-            alt={title ?? 'No title available.'}
-            className="w-full max-h-[50vh] object-cover object-center"
-          />
+          <div className="max-h-[60vh] overflow-auto">
+            <Image
+              src={`https://www.themoviedb.org/t/p/w500${result.posterPath}`}
+              width={500}
+              height={500}
+              alt={title ?? 'No title available.'}
+              className="w-full object-cover object-top"
+            />
+          </div>
           <form method="dialog">
             <button className="absolute top-0 right-0 p-2 text-4xl text-primary hover:text-accent">
               <IoMdCloseCircleOutline />
