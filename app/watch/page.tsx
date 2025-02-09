@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { validateSessionUser } from '../actions/utils';
 import { getUserWatchList } from '../actions/watch-list/actions';
 import { useMainStore } from '../store/providers/main-store-provider';
-import SearchSection from './SearchSection';
+import SearchSection from './search/SearchSection';
 import WatchList from './watch-list/WatchList';
 
 const SearchPage = () => {

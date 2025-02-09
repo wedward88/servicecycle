@@ -1,7 +1,6 @@
 'use server';
-
-import { SearchResultItemType } from '@/app/watch/type';
-import { WatchListItemType } from '@/app/watch/watch-list/type';
+import { SearchResultItemType } from '@/app/watch/search/types';
+import { WatchListItemType } from '@/app/watch/watch-list/types';
 import prisma from '@/prisma/client';
 import { User, WatchList, WatchListItem } from '@prisma/client';
 

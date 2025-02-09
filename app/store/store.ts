@@ -3,12 +3,22 @@
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { createStore } from 'zustand/vanilla';
 
-import { DBSubscription, Subscription } from '@/app/subscriptions/types';
+import {
+  DBSubscription,
+  Subscription,
+} from '@/app/subscriptions/types';
 
-import { createSubscription, deleteSubscription, editSubscription } from '../actions/actions';
-import { addToWatchList, removeFromWatchList } from '../actions/watch-list/actions';
-import { SearchResultItemType } from '../watch/type';
-import { WatchListItemType } from '../watch/watch-list/type';
+import {
+  createSubscription,
+  deleteSubscription,
+  editSubscription,
+} from '../actions/actions';
+import {
+  addToWatchList,
+  removeFromWatchList,
+} from '../actions/watch-list/actions';
+import { SearchResultItemType } from '../watch/search/types';
+import { WatchListItemType } from '../watch/watch-list/types';
 
 export interface MainStoreInterface {
   watchListMediaIds: number[];
@@ -103,7 +113,6 @@ export const createMainStore = () => {
         },
 
         createSubscription: async (formData: Subscription) => {
-          /* eslint-disable @typescript-eslint/no-explicit-any */
           try {
             const addedItem: DBSubscription =
               await createSubscription(formData);

@@ -1,5 +1,6 @@
 'use client';
 import { motion } from 'motion/react';
+import Image from 'next/image';
 
 import Form from '../components/form/Form';
 import { SubscriptionFormFields } from '../components/form/FormManifest';
@@ -52,9 +53,11 @@ const SubTable: React.FC<SubTableProps> = ({ userSubscriptions }) => {
                 <td>
                   <div className="flex items-center gap-3">
                     {sub.streamingProvider && (
-                      <img
+                      <Image
                         src={`${baseImageURL}${sub.streamingProvider?.logoUrl}`}
                         alt={`${sub.streamingProvider.name} logo`}
+                        width={100}
+                        height={100}
                         className="w-8 h-8 rounded-lg"
                       />
                     )}

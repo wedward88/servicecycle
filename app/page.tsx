@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { FiCheckCircle } from 'react-icons/fi';
 
@@ -15,19 +16,25 @@ export default async function Home() {
           <div>
             <div className="mb-6 flex flex-col items-center space-y-5">
               <div className="flex space-x-10">
-                <img
+                <Image
                   alt="subscriptions"
                   src="/images/subscriptions.jpg"
+                  width={100}
+                  height={200}
                   className="object-cover shadow-xl rounded-2xl w-[200px] md:w-[500px] md:h-[600px]"
                 />
-                <img
+                <Image
                   alt="subscriptions"
                   src="/images/search1.jpg"
+                  width={200}
+                  height={300}
                   className="rounded-2xl shadow-xl hidden lg:block md:w-[500px] md:h-[600px]"
                 />
-                <img
+                <Image
                   alt="subscriptions"
                   src="/images/search2.jpg"
+                  width={200}
+                  height={300}
                   className="rounded-2xl shadow-xl hidden xl:block md:w-[500px] md:h-[600px]"
                 />
               </div>

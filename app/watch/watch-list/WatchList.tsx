@@ -3,10 +3,12 @@ import { motion } from 'motion/react';
 
 import { useMainStore } from '@/app/store/providers/main-store-provider';
 
+import ResultModal from '../components/ResultModal';
 import WatchListItem from './WatchListItem';
 
 const WatchList = () => {
   const { userWatchList } = useMainStore((state) => state);
+
   const MotionTable = motion.table;
 
   const containerVariants = {
@@ -15,6 +17,14 @@ const WatchList = () => {
   };
 
   const noWatchList = !userWatchList || userWatchList.length === 0;
+
+  const watchListItemClick = (id: number) => {
+    const modal = document.getElementById(`watch-modal-${id}`);
+
+    if (modal) {
+      (modal as HTMLDialogElement).showModal();
+    }
+  };
 
   return (
     <section className="flex flex-col w-full md:w-[50vw] items-center">
@@ -42,7 +52,11 @@ const WatchList = () => {
             </thead>
             <tbody>
               {userWatchList.map((listItem, idx) => (
-                <WatchListItem key={idx} item={listItem} />
+                <WatchListItem
+                  onClick={() => watchListItemClick(listItem.id)}
+                  key={idx}
+                  item={listItem}
+                />
               ))}
             </tbody>
           </MotionTable>
@@ -50,6 +64,17 @@ const WatchList = () => {
             Note: A check mark indicates an active subscription for
             that line item.
           </p>
+          {userWatchList.map((listItem, idx) => (
+            <ResultModal
+              key={idx}
+              result={listItem}
+              title={listItem.originalName || listItem.originalTitle}
+              isTV={listItem.mediaType === 'tv'}
+              isInWatchList={true}
+              watchProviders={listItem.streamingProviders}
+              watchModal={true}
+            />
+          ))}
         </div>
       )}
     </section>

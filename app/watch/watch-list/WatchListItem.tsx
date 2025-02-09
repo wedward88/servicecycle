@@ -8,10 +8,11 @@ import { RiDeleteBin6Fill } from 'react-icons/ri';
 
 import { useMainStore } from '@/app/store/providers/main-store-provider';
 
-import { WatchListItemType } from './type';
+import { WatchListItemType } from './types';
 
 interface WatchListItemProps {
   item: WatchListItemType;
+  onClick: () => void;
 }
 
 const MotionTr = motion.tr;
@@ -28,7 +29,7 @@ const itemVariants = {
 };
 const baseImageURL = 'https://www.themoviedb.org/t/p/w500';
 
-const WatchListItem = ({ item }: WatchListItemProps) => {
+const WatchListItem = ({ item, onClick }: WatchListItemProps) => {
   const { subscriptionIds, removeFromWatchList } = useMainStore(
     (state) => state
   );
@@ -43,6 +44,7 @@ const WatchListItem = ({ item }: WatchListItemProps) => {
     <MotionTr
       className="relative font-bold hover:bg-base-300 hover:cursor-pointer"
       variants={itemVariants}
+      onClick={onClick}
     >
       <td className="text-xl md:text-3xl">
         {item.mediaType === 'tv' ? <ImTv /> : <MdLocalMovies />}
