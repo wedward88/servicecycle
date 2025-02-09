@@ -1,8 +1,5 @@
 import { SearchResultItemType } from '../../search/types';
-import {
-  StreamingProviderType,
-  WatchListItemType,
-} from '../../watch-list/types';
+import { WatchListItemType } from '../../watch-list/types';
 import { ProviderDictionary } from '../types';
 
 export function mapSearchResultToWatchListItem(

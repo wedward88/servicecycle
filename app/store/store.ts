@@ -17,7 +17,7 @@ import {
   addToWatchList,
   removeFromWatchList,
 } from '../actions/watch-list/actions';
-import { SearchResultItemType } from '../watch/types';
+import { SearchResultItemType } from '../watch/search/types';
 import { WatchListItemType } from '../watch/watch-list/types';
 
 export interface MainStoreInterface {
@@ -113,7 +113,6 @@ export const createMainStore = () => {
         },
 
         createSubscription: async (formData: Subscription) => {
-          /* eslint-disable @typescript-eslint/no-explicit-any */
           try {
             const addedItem: DBSubscription =
               await createSubscription(formData);

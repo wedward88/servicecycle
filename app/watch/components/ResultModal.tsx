@@ -4,6 +4,7 @@ import { IoMdCloseCircleOutline } from 'react-icons/io';
 
 import { useMainStore } from '@/app/store/providers/main-store-provider';
 
+import { SearchResultItemType } from '../search/types';
 import {
   StreamingProviderType,
   WatchListItemType,
@@ -101,7 +102,7 @@ const ResultModal = ({
                 <AddToWatchList
                   className="text-4xl text-white hover:cursor-pointer"
                   isInWatchList={isInWatchList}
-                  result={result}
+                  result={result as unknown as SearchResultItemType}
                 />
               )}
             </div>
