@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import Image from 'next/image';
-import { IoMdCloseCircleOutline } from 'react-icons/io';
+import { IoIosClose } from 'react-icons/io';
 
 import { useMainStore } from '@/app/store/providers/main-store-provider';
 
@@ -83,6 +83,13 @@ const ResultModal = ({
         className="modal modal-bottom sm:modal-middle max-h-[100vh] max-w-[100vw]"
       >
         <div className="modal-box p-0">
+          <div className="sticky top-0">
+            <form method="dialog">
+              <button className="absolute top-0 right-0 p-2 text-4xl">
+                <IoIosClose className="shadow-xl mix-blend-normal rounded-badge backdrop-contrast-200 backdrop-blur-lg" />
+              </button>
+            </form>
+          </div>
           <div className="max-h-[60vh] overflow-auto">
             <Image
               src={`https://www.themoviedb.org/t/p/w500${result.posterPath}`}
@@ -92,11 +99,6 @@ const ResultModal = ({
               className="w-full object-cover object-top"
             />
           </div>
-          <form method="dialog">
-            <button className="absolute top-0 right-0 p-2 text-4xl text-primary hover:text-accent">
-              <IoMdCloseCircleOutline />
-            </button>
-          </form>
           <div className="p-5">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-lg">{title}</h3>
