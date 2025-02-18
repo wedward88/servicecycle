@@ -82,7 +82,7 @@ const ResultModal = ({
         id={`${watchModal ? 'watch' : 'search'}-modal-${result.id}`}
         className="modal modal-bottom sm:modal-middle max-h-[100vh] max-w-[100vw]"
       >
-        <div className="modal-box p-0">
+        <div className="modal-box p-0 no-scrollbar">
           <div className="sticky top-0">
             <form method="dialog">
               <button className="absolute top-0 right-0 p-2 text-4xl">
@@ -90,7 +90,7 @@ const ResultModal = ({
               </button>
             </form>
           </div>
-          <div className="max-h-[60vh] overflow-auto">
+          <div className="max-h-[60vh] overflow-auto no-scrollbar">
             <Image
               src={`https://www.themoviedb.org/t/p/w500${result.posterPath}`}
               width={500}

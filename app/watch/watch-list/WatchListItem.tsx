@@ -42,9 +42,8 @@ const WatchListItem = ({ item, onClick }: WatchListItemProps) => {
 
   return (
     <MotionTr
-      className="relative font-bold hover:bg-base-300 hover:cursor-pointer"
+      className="relative font-bold hover:bg-base-300"
       variants={itemVariants}
-      onClick={onClick}
     >
       <td className="text-xl md:text-3xl">
         {item.mediaType === 'tv' ? <ImTv /> : <MdLocalMovies />}
@@ -63,14 +62,18 @@ const WatchListItem = ({ item, onClick }: WatchListItemProps) => {
           }}
           width={100}
           height={100}
+          onClick={onClick}
           priority
-          className="w-full max-h-[200px] object-cover rounded-xl aspect-[3/2.2]"
+          className="w-full max-h-[200px] object-cover rounded-xl aspect-[3/2.2] hover:cursor-pointer"
         />
       </td>
       <td>
         <div className="flex items-center gap-3">
           <div>
-            <div className="font-bold text-xl line-clamp-1">
+            <div
+              className="font-bold text-xl line-clamp-1 hover:cursor-pointer"
+              onClick={onClick}
+            >
               {item.originalName || item.originalTitle}
             </div>
           </div>

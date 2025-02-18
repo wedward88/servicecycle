@@ -6,38 +6,15 @@ export default async function Home() {
   return (
     <div className="hero bg-base-200 min-h-80 rounded-3xl">
       <div className="hero-content text-center w-full">
-        <div className="flex flex-col justify-center w-full">
-          <h1 className="text-5xl font-thin mb-10 md:mb-14 lg:mb-16">
+        <div className="flex flex-col items-center justify-center w-full">
+          <h1 className="text-5xl font-thin my-10 md:mb-14 lg:mb-16">
             Welcome to{' '}
-            <span className="underline decoration-4 decoration-primary">
+            <span className="underline decoration-4 decoration-primary font-semibold">
               ServiceCycle.
             </span>
           </h1>
           <div>
-            <div className="mb-6 flex flex-col items-center space-y-5">
-              <div className="flex space-x-10">
-                <Image
-                  alt="subscriptions"
-                  src="/images/subscriptions.jpg"
-                  width={500}
-                  height={500}
-                  className="shadow-xl object-fill rounded-2xl h-auto aspect-auto md:w-[20vw]"
-                />
-                <Image
-                  alt="subscriptions"
-                  src="/images/search1.jpg"
-                  width={500}
-                  height={500}
-                  className="rounded-2xl shadow-xl h-auto w-[30vw] hidden lg:block"
-                />
-                <Image
-                  alt="subscriptions"
-                  src="/images/search2.jpg"
-                  width={500}
-                  height={500}
-                  className="rounded-2xl shadow-xl h-auto aspect-auto w-[20vw] hidden xl:block"
-                />
-              </div>
+            <div className="mb-10 flex flex-col items-center space-y-5">
               <div className="mb-6">
                 <div className="flex items-start mb-4">
                   <FiCheckCircle className="text-primary h-8 w-8 mr-4 flex-shrink-0" />
@@ -66,6 +43,40 @@ export default async function Home() {
                   Get started
                 </Link>
               </div>
+            </div>
+            <div className="flex flex-wrap justify-center gap-10 text-xl font-bold lg:w-[90vw]">
+              {[
+                {
+                  title: 'Track Subscriptions',
+                  image: 'subscriptions',
+                },
+                {
+                  title: 'Search for TV or Movies',
+                  image: 'search',
+                },
+                {
+                  title: 'View Details',
+                  image: 'search-result',
+                },
+                {
+                  title: 'Curate a Watch List',
+                  image: 'watch-list',
+                },
+              ].map(({ title, image }) => (
+                <div
+                  key={title}
+                  className="flex flex-col flex-1 min-w-[70vw] md:min-w-[40vw] lg:min-w-[100px] max-w-[20%]"
+                >
+                  <h1 className="mb-5">{title}</h1>
+                  <Image
+                    alt={title}
+                    src={`/images/${image}.png`}
+                    width={500}
+                    height={500}
+                    className="shadow-xl rounded-2xl h-auto aspect-auto w-auto"
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>

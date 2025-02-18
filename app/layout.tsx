@@ -28,11 +28,11 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="aqua">
       <body
-        className={`${roboto.className} antialiased flex flex-col items-center m-2 p-5`}
+        className={`${roboto.className} antialiased flex flex-col items-center m-2 p-5 h-[100vh]`}
       >
         <AuthProvider>
           <NavBar />
-          <main className="w-full">
+          <main className="w-full h-full">
             <MainStoreProvider>{children}</MainStoreProvider>
           </main>
         </AuthProvider>

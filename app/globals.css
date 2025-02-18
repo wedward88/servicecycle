@@ -2,15 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  scrollbar-width: thin;
-  scrollbar-color: oklch(var(--s)) oklch(var(--p)) !important;
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-::-webkit-scrollbar-track {
-  background: oklch(var(--p));
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: oklch(var(--s));
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
