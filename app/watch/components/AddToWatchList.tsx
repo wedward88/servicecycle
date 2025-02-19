@@ -3,10 +3,10 @@ import { CiCircleCheck, CiCirclePlus } from 'react-icons/ci';
 
 import { useMainStore } from '@/app/store/providers/main-store-provider';
 
-import { SearchResultItemType } from '../search/types';
+import { WatchListItemType } from '../watch-list/types';
 
 interface AddToWatchListProps {
-  result: SearchResultItemType;
+  result: WatchListItemType;
   isInWatchList: boolean;
   className: string;
 }

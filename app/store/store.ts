@@ -3,28 +3,17 @@
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { createStore } from 'zustand/vanilla';
 
-import {
-  DBSubscription,
-  Subscription,
-} from '@/app/subscriptions/types';
+import { DBSubscription, Subscription } from '@/app/subscriptions/types';
 
-import {
-  createSubscription,
-  deleteSubscription,
-  editSubscription,
-} from '../actions/actions';
-import {
-  addToWatchList,
-  removeFromWatchList,
-} from '../actions/watch-list/actions';
-import { SearchResultItemType } from '../watch/search/types';
+import { createSubscription, deleteSubscription, editSubscription } from '../actions/actions';
+import { addToWatchList, removeFromWatchList } from '../actions/watch-list/actions';
 import { WatchListItemType } from '../watch/watch-list/types';
 
 export interface MainStoreInterface {
   watchListMediaIds: number[];
   userWatchList: WatchListItemType[];
   setUserWatchList: (newList: WatchListItemType[]) => void;
-  addToWatchList: (item: SearchResultItemType) => void;
+  addToWatchList: (item: WatchListItemType) => void;
   removeFromWatchList: (mediaId: number) => void;
   subscriptions: Subscription[];
   subscriptionIds: number[];
@@ -51,7 +40,7 @@ export const createMainStore = () => {
           });
         },
 
-        addToWatchList: async (item: SearchResultItemType) => {
+        addToWatchList: async (item: WatchListItemType) => {
           try {
             const addedItem = await addToWatchList(item);
 

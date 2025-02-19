@@ -44,7 +44,7 @@ const ResultCard = ({ result, isInWatchList }: ResultCardProps) => {
       <AddToWatchList
         className="absolute top-2 right-2 text-5xl rounded-badge backdrop-contrast-200 backdrop-blur-lg hover:cursor-pointer z-10"
         isInWatchList={isInWatchList}
-        result={result}
+        result={searchResult}
       />
       <div
         onClick={() => resultClick(result.media_type, result.id)}

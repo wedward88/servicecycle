@@ -4,11 +4,7 @@ import { IoIosClose } from 'react-icons/io';
 
 import { useMainStore } from '@/app/store/providers/main-store-provider';
 
-import { SearchResultItemType } from '../search/types';
-import {
-  StreamingProviderType,
-  WatchListItemType,
-} from '../watch-list/types';
+import { StreamingProviderType, WatchListItemType } from '../watch-list/types';
 import AddToWatchList from './AddToWatchList';
 
 type ResultModalProps = {
@@ -106,7 +102,7 @@ const ResultModal = ({
                 <AddToWatchList
                   className="text-4xl text-white hover:cursor-pointer"
                   isInWatchList={isInWatchList}
-                  result={result as unknown as SearchResultItemType}
+                  result={result}
                 />
               )}
             </div>

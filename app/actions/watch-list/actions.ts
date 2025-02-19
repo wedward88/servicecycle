@@ -1,5 +1,4 @@
 'use server';
-import { SearchResultItemType } from '@/app/watch/search/types';
 import { WatchListItemType } from '@/app/watch/watch-list/types';
 import prisma from '@/prisma/client';
 import { User, WatchList, WatchListItem } from '@prisma/client';
@@ -84,7 +83,7 @@ export const getUserWatchList = async (user: User) => {
 };
 
 const getOrCreateWatchListItem = async (
-  item: SearchResultItemType
+  item: WatchListItemType
 ): Promise<WatchListItem> => {
   let watchListItem = await prisma.watchListItem.findUnique({
     where: {
@@ -96,20 +95,19 @@ const getOrCreateWatchListItem = async (
     watchListItem = await prisma.watchListItem.create({
       data: {
         mediaId: item.id,
-        mediaType: item.media_type,
-        originalTitle: item.original_title,
-        originalName: item.original_name,
-        posterPath: item.poster_path,
+        mediaType: item.mediaType,
+        originalTitle: item.originalTitle,
+        originalName: item.originalName,
+        posterPath: item.posterPath,
         overview: item.overview,
       },
     });
   }
-
   return watchListItem;
 };
 
 export const addToWatchList = async (
-  item: SearchResultItemType
+  item: WatchListItemType
 ): Promise<WatchListItemType | null> => {
   const user = await validateSessionUser();
   const watchList = await getOrCreateWatchList(user);
