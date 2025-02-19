@@ -1,34 +1,39 @@
-## ServiceCycle
+# ServiceCycle
 
-A fullstack [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+[servicecycle.wedward.com](https://servicecycle.wedward.com)
 
-ServiceCycle can be used to
+A fullstack project to keep track of your streaming subscriptions, and search for TV shows and movies.
 
-## Getting Started
+## Technology
 
-First, run the development server:
+- [Next.js](https://nextjs.org/)
+- [Zustand](https://github.com/pmndrs/zustand) State Management
+- [React](https://react.dev/)
+- [Prisma](https://www.prisma.io/) ORM
+- TypeScript
+- PostgreSQL
+- OAuth2.0
+- CI/CD via GitHub Actions
+- Deployed on a dedicated server running Apache2.
+- Streaming provider, TV, and Movie data provided by [TMDB](https://www.themoviedb.org/) (The Movie DB)
 
-```bash
-npm run dev
-```
+## Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Registration/Login via OAuth2.0 (Google)
+- Streaming Subscription Management
+  - Add subscriptions (select from a pre-fetched list of providers, include cost)
+  - Edit subscriptions
+  - Delete subscriptions
+  - Subscriptions total monthly cost
+- TV Show and Movie Search
+  - See where you can watch a particular show or movie
+  - Confirm if you're subscribed to a streaming provider that has the show or movie you're interested in watching
+- Watch List
+  - Add TV shows or movies to a watch list
+  - See which shows or movies you have an active subscription to view
+  - Delete from watch list
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Future Plans
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Add user registration/log in separately from OAuth2.0.
+- Add drag to reorder functionality/animation to watch list
