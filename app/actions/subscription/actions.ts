@@ -4,9 +4,9 @@ import { revalidatePath } from 'next/cache';
 
 import prisma from '@/prisma/client';
 
-import { Subscription } from '../subscriptions/types';
-import schema from './schema';
-import { validateSessionUser } from './utils';
+import { Subscription } from '../../subscriptions/types';
+import schema from '../schema';
+import { validateSessionUser } from '../utils';
 
 export async function searchStreamingProvider(query: string) {
   if (!query) return [];

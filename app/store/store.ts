@@ -3,10 +3,20 @@
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { createStore } from 'zustand/vanilla';
 
-import { DBSubscription, Subscription } from '@/app/subscriptions/types';
+import {
+  DBSubscription,
+  Subscription,
+} from '@/app/subscriptions/types';
 
-import { createSubscription, deleteSubscription, editSubscription } from '../actions/actions';
-import { addToWatchList, removeFromWatchList } from '../actions/watch-list/actions';
+import {
+  createSubscription,
+  deleteSubscription,
+  editSubscription,
+} from '../actions/subscription/actions';
+import {
+  addToWatchList,
+  removeFromWatchList,
+} from '../actions/watch-list/actions';
 import { WatchListItemType } from '../watch/watch-list/types';
 
 export interface MainStoreInterface {

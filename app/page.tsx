@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FiCheckCircle } from 'react-icons/fi';
 
-export default async function Home() {
+export default function Home() {
   return (
     <div className="hero bg-base-200 min-h-80 rounded-3xl">
       <div className="hero-content text-center w-full">

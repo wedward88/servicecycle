@@ -2,7 +2,7 @@
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 
-import { getUserSubscriptions } from '../actions/actions';
+import { getUserSubscriptions } from '../actions/subscription/actions';
 import SubForm from '../components/form/Form';
 import { SubscriptionFormFields } from '../components/form/FormManifest';
 import { useMainStore } from '../store/providers/main-store-provider';

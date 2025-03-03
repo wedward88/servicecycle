@@ -6,7 +6,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { useMainStore } from '@/app/store/providers/main-store-provider';
 import { Subscription } from '@/app/subscriptions/types';
 
-import { searchStreamingProvider } from '../../actions/actions';
+import { searchStreamingProvider } from '../../actions/subscription/actions';
 import Error from './components/Error';
 import InputList from './components/InputList';
 import { fieldType, StreamingProvider } from './types';
