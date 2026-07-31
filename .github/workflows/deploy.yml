@@ -4,47 +4,49 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-servicecycle
+  cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Cache npm and Next.js build dependencies
-        uses: actions/cache@v4
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v4
         with:
-          path: |
-            ~/.npm
-            ${{ github.workspace }}/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
 
-      - name: Set up SSH key
+      - name: Deploy over Tailscale SSH
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
         run: |
-          echo -e "$SSH_PRIVATE_KEY" > private_key.pem
-          chmod 600 private_key.pem
-          ls -lah private_key.pem
-          file private_key.pem
-          cat private_key.pem | head -n 5
-
-      - name: Deploy to server
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        run: |
+          set -euo pipefail
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh -i ~/.ssh/id_rsa -T -o StrictHostKeyChecking=no root@23.94.83.27 << 'EOF'
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use 18
-            cd ~/dev/servicecycle
-            git pull
-            npm install
-            npx prisma migrate dev
-            npm run build
-            pm2 restart servicecycle --update-env
+          printf '%s\n' "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+
+          ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new \
+            "root@${VPS_HOST}" 'bash -s' <<'EOF'
+          set -euo pipefail
+          export NVM_DIR="$HOME/.nvm"
+          # shellcheck disable=SC1091
+          [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+          cd /root/dev/servicecycle
+          git remote get-url origin >/dev/null
+          git fetch origin master
+          git reset --hard origin/master
+          npm install
+          npx prisma generate
+          npx prisma migrate deploy
+          npm run build
+          pm2 restart servicecycle --update-env
+          pm2 save
+          echo "ServiceCycle deploy OK"
           EOF
