@@ -45,22 +45,52 @@
 }
 
 .brand-underline {
+  position: relative;
   display: block;
   width: 100%;
   height: 0.09em;
   margin-top: 0.28em;
   border-radius: 999px;
+  overflow: hidden;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    color-mix(in srgb, var(--brand-underline) 28%, transparent) 10%,
-    color-mix(in srgb, var(--brand-underline) 85%, transparent) 38%,
-    var(--brand-underline) 50%,
-    color-mix(in srgb, var(--brand-underline) 85%, transparent) 62%,
-    color-mix(in srgb, var(--brand-underline) 28%, transparent) 90%,
+    color-mix(in srgb, var(--brand-underline) 28%, transparent) 14%,
+    color-mix(in srgb, var(--brand-underline) 65%, transparent) 50%,
+    color-mix(in srgb, var(--brand-underline) 28%, transparent) 86%,
     transparent 100%
   );
   transform-origin: 35% 50%;
+}
+
+.brand-underline::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 38%,
+    color-mix(in srgb, var(--brand-underline) 55%, white) 50%,
+    transparent 62%,
+    transparent 100%
+  );
+  background-size: 240% 100%;
+  animation: brand-underline-glisten 3.6s ease-in-out infinite;
+  animation-delay: 0.85s;
+}
+
+@keyframes brand-underline-glisten {
+  0%,
+  100% {
+    background-position: 100% 0;
+    opacity: 0.35;
+  }
+  50% {
+    background-position: 0% 0;
+    opacity: 1;
+  }
 }
 
 .surface {
