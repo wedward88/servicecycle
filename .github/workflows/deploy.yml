@@ -1,4 +1,4 @@
-name: Deploy ServiceCycle
+name: Deploy BingeQueue
 
 on:
   push:
@@ -48,5 +48,5 @@ jobs:
           npm run build
           pm2 restart servicecycle --update-env
           pm2 save
-          echo "ServiceCycle deploy OK"
+          echo "BingeQueue deploy OK"
           EOF

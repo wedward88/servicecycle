@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { menuEnter, transitionFast } from '@/app/lib/motion';
 
+import BrandMark from './BrandMark';
 import SignOutButton from './SignOut';
 
 const NavBar = () => {
@@ -76,18 +77,11 @@ const NavBar = () => {
             <div className="flex items-center gap-8">
               <Link
                 href="/subscriptions"
-                className="flex shrink-0 items-center gap-2.5"
+                className="flex shrink-0 items-center gap-2.5 text-primary"
               >
-                <Image
-                  src="/servicecycle-mark.png"
-                  alt=""
-                  width={48}
-                  height={48}
-                  className="h-8 w-8 shrink-0 object-contain md:h-9 md:w-9"
-                  priority
-                />
-                <span className="font-display text-xl font-medium leading-none tracking-tight text-primary md:text-2xl">
-                  ServiceCycle
+                <BrandMark className="h-8 w-8 shrink-0 md:h-9 md:w-9" />
+                <span className="font-display text-xl font-medium leading-none tracking-tight md:text-2xl">
+                  BingeQueue
                 </span>
               </Link>
               <nav className="hidden items-center gap-5 md:flex">

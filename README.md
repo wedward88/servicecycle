@@ -1,8 +1,8 @@
-# ServiceCycle
+# BingeQueue
 
 [servicecycle.wedward.com](https://servicecycle.wedward.com)
 
-A fullstack project to keep track of your streaming subscriptions, and search for TV shows and movies.
+Track your streaming subscriptions, search TV & movies, and keep a watch list of what to binge next.
 
 ## Technology
 
@@ -52,6 +52,16 @@ A fullstack project to keep track of your streaming subscriptions, and search fo
 This product uses the TMDB API but is not endorsed or certified by TMDB.
 
 Streaming provider, TV, and movie data is provided by [TMDB](https://www.themoviedb.org/). The app includes the required TMDB logo and attribution notice in a Credits section.
+
+## Mobile API auth
+
+The iOS client uses Google Sign-In and exchanges an ID token for a JWT:
+
+- `POST /api/auth/mobile` with `{ "idToken": "<google-id-token>" }` → `{ token, user }`
+- Authenticated `/api/*` routes accept `Authorization: Bearer <token>` (web continues to use NextAuth cookies)
+- Guest/local iOS mode does not sign in; `GET /api/providers`, `GET /api/search`, and `GET /api/titles/.../providers` are public TMDB proxies. Subscriptions and watch-list routes still require auth for cloud sync.
+
+Optional env: `MOBILE_JWT_SECRET` (falls back to `NEXTAUTH_SECRET`), `GOOGLE_IOS_CLIENT_ID` if verifying iOS-audience tokens.
 
 ## Future Plans
 

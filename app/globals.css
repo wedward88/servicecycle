@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --hero-from: #d2dbe4;
-  --hero-via: #c5d6e4;
-  --hero-to: #b8c7d6;
-  --brand-underline: #0284c7;
-  --atmosphere-glow: rgba(14, 165, 233, 0.22);
-  --atmosphere-glow-secondary: rgba(71, 110, 160, 0.14);
-  --surface: #e8eef4;
-  --surface-muted: #dce5ed;
+  --hero-from: #1c1230;
+  --hero-via: #18102a;
+  --hero-to: #120a1c;
+  --brand-underline: #a78bfa;
+  --atmosphere-glow: rgba(167, 139, 250, 0.22);
+  --atmosphere-glow-secondary: rgba(192, 132, 252, 0.12);
+  --surface: #1e1530;
+  --surface-muted: #241a3a;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -47,7 +47,7 @@
 .brand-underline {
   display: inline-block;
   border-bottom: 0.16em solid
-    color-mix(in srgb, var(--brand-underline) 40%, transparent);
+    color-mix(in srgb, var(--brand-underline) 45%, transparent);
   padding-bottom: 0.12em;
 }
 

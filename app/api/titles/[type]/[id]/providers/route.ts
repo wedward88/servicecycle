@@ -1,4 +1,4 @@
-import { handleRouteError, jsonOk, requireApiUser } from '@/lib/api/http';
+import { handleRouteError, jsonOk } from '@/lib/api/http';
 import { AppError } from '@/services/errors';
 import { fetchWatchProviders } from '@/services/tmdb';
 
@@ -6,9 +6,9 @@ type RouteContext = {
   params: Promise<{ type: string; id: string }>;
 };
 
+/** Public — TMDB “where to watch” lookup (no user data). */
 export async function GET(_request: Request, context: RouteContext) {
   try {
-    await requireApiUser();
     const { type, id } = await context.params;
 
     if (type !== 'movie' && type !== 'tv') {

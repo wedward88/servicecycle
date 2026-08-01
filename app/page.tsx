@@ -1,8 +1,8 @@
 'use client';
 
 import { motion, useReducedMotion } from 'motion/react';
-import Image from 'next/image';
 
+import BrandMark from './components/BrandMark';
 import SignInButton from './components/SignInButton';
 import {
   SearchMock,
@@ -50,16 +50,9 @@ export default function Home() {
               initial="hidden"
               animate="visible"
               transition={enter(0)}
-              className="shrink-0 -mt-1 sm:-mt-1.5 md:-mt-2"
+              className="shrink-0 -mt-1 text-primary sm:-mt-1.5 md:-mt-2"
             >
-              <Image
-                src="/servicecycle-mark.png"
-                alt=""
-                width={200}
-                height={200}
-                priority
-                className="h-16 w-16 object-contain sm:h-20 sm:w-20 md:h-24 md:w-24"
-              />
+              <BrandMark className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24" />
             </motion.div>
             <div className="min-w-0 flex-1">
               <motion.p
@@ -69,7 +62,7 @@ export default function Home() {
                 transition={enter(0)}
                 className="font-display text-4xl font-medium leading-none tracking-tight text-primary brand-underline sm:text-5xl md:text-6xl"
               >
-                ServiceCycle
+                BingeQueue
               </motion.p>
               <motion.h1
                 variants={fadeUp}

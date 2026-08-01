@@ -1,4 +1,4 @@
-import { handleRouteError, jsonOk, requireApiUser } from '@/lib/api/http';
+import { handleRouteError, jsonOk } from '@/lib/api/http';
 import { AppError } from '@/services/errors';
 import {
   discoverByProvider,
@@ -13,9 +13,9 @@ function parseMediaType(value: string | null): MediaTypeFilter {
   return 'all';
 }
 
+/** Public — TMDB proxy for search/discover (no user data). */
 export async function GET(request: Request) {
   try {
-    await requireApiUser();
     const { searchParams } = new URL(request.url);
     const q = searchParams.get('q')?.trim() ?? '';
     const providerIdParam = searchParams.get('providerId');
