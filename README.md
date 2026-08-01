@@ -25,13 +25,16 @@ A fullstack project to keep track of your streaming subscriptions, and search fo
 - Streaming subscription management
   - Multi-select popular services with suggested US list prices (editable for grandfathered or different plans)
   - Search all providers when something isn’t in the popular list
+  - Channel add-ons and plan-tier duplicates filtered out of search results (Amazon/Apple TV/Roku channels, “with Ads”, Premium variants, etc.)
   - Edit and delete subscriptions
   - Monthly stack total across services
 - TV show and movie search
   - Search by title
-  - Browse popular titles by your current subscriptions
+  - Filter results to All, Movies, or TV
+  - Browse popular titles by your current subscriptions (respects the same media filter)
   - Poster cards with watch-list controls
-  - Detail modal with overview, availability on your plans, and expandable poster
+  - Detail modal with overview, availability on your plans, and a full-viewport poster lightbox
+  - “Where to watch” lists normalized to standalone services (no channel/tier clutter)
 - Watch list
   - Add or remove titles from search results
   - See which titles are available on your current plans

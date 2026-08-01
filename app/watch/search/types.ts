@@ -1,3 +1,5 @@
+export type MediaTypeFilter = 'all' | 'movie' | 'tv';
+
 export type SearchResultItemType = {
   id: number;
   media_type: string;

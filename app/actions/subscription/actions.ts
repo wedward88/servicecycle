@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 
 import { COMMON_STREAMING_PROVIDER_IDS } from '@/app/lib/commonProviders';
+import { filterStandaloneProviders } from '@/app/lib/streamingProviders';
 import prisma from '@/prisma/client';
 
 import { Subscription } from '../../subscriptions/types';
@@ -19,10 +20,11 @@ export async function searchStreamingProvider(query: string) {
         mode: 'insensitive',
       },
     },
-    take: 10,
+    // Over-fetch so channel add-ons can be stripped without starving results.
+    take: 40,
   });
 
-  return providers;
+  return filterStandaloneProviders(providers).slice(0, 10);
 }
 
 export async function getCommonStreamingProviders() {

@@ -1,10 +1,14 @@
 'use server';
 
+import { filterStandaloneProviders } from '@/app/lib/streamingProviders';
 import {
   ProviderDictionary,
   WatchProvidersResponse,
 } from '@/app/watch/components/types';
-import { SearchResultItemType } from '@/app/watch/search/types';
+import {
+  MediaTypeFilter,
+  SearchResultItemType,
+} from '@/app/watch/search/types';
 
 export async function fetchWatchProviders(type: string, id: number) {
   const TMDB_ENDPOINT = `${type}/${id}/watch/providers`;
@@ -34,7 +38,17 @@ export async function fetchWatchProviders(type: string, id: number) {
     }
   }
 
-  return providerDictionary || {};
+  const filtered = filterStandaloneProviders(
+    Object.values(providerDictionary).map((provider) => ({
+      name: provider.provider_name,
+      providerId: provider.id,
+      provider,
+    }))
+  );
+
+  return Object.fromEntries(
+    filtered.map(({ provider }) => [provider.id, provider])
+  ) as ProviderDictionary;
 }
 
 type TMDBListItem = {
@@ -80,15 +94,46 @@ function normalizeSearchItem(
   };
 }
 
+function requireTmdbConfig() {
+  const apiKey = process.env.TMDB_API_KEY;
+  const baseUrl = process.env.TMDB_URL;
+  if (!apiKey || !baseUrl) {
+    throw new Error(
+      'TMDB is not configured. Set TMDB_API_KEY and TMDB_URL in .env, then restart the dev server.'
+    );
+  }
+  return { apiKey, baseUrl };
+}
+
+async function readTmdbError(response: Response) {
+  try {
+    const body = await response.text();
+    return body.slice(0, 200);
+  } catch {
+    return '';
+  }
+}
+
 export async function fetchTMDBResults(
-  query: string
+  query: string,
+  mediaType: MediaTypeFilter = 'all'
 ): Promise<SearchResultItemType[]> {
-  const TMDB_ENDPOINT = 'search/multi?query=';
-  const URL = `${process.env.TMDB_URL}${TMDB_ENDPOINT}${encodeURIComponent(query)}&api_key=${process.env.TMDB_API_KEY}`;
+  const { apiKey, baseUrl } = requireTmdbConfig();
+  const endpoint =
+    mediaType === 'movie'
+      ? 'search/movie'
+      : mediaType === 'tv'
+        ? 'search/tv'
+        : 'search/multi';
+
+  const URL = `${baseUrl}${endpoint}?query=${encodeURIComponent(query)}&api_key=${apiKey}`;
   const response = await fetch(URL);
 
   if (!response.ok) {
-    throw new Error(`Error fetching data: ${response.statusText}`);
+    const details = await readTmdbError(response);
+    throw new Error(
+      `Error fetching TMDB ${endpoint} (${response.status} ${response.statusText})${details ? `: ${details}` : ''}`
+    );
   }
 
   const results = await response.json();
@@ -96,30 +141,53 @@ export async function fetchTMDBResults(
 
   return final
     .filter(isSearchableResult)
-    .map((item) => normalizeSearchItem(item));
+    .map((item) =>
+      normalizeSearchItem(
+        item,
+        mediaType === 'all' ? undefined : mediaType
+      )
+    );
 }
 
 export async function fetchTMDBByProvider(
-  providerId: number
+  providerId: number,
+  mediaType: MediaTypeFilter = 'all'
 ): Promise<SearchResultItemType[]> {
-  const common = `api_key=${process.env.TMDB_API_KEY}&watch_region=US&with_watch_providers=${providerId}&with_watch_monetization_types=flatrate&sort_by=popularity.desc&language=en-US`;
+  const { apiKey, baseUrl } = requireTmdbConfig();
+  const common = `api_key=${apiKey}&watch_region=US&with_watch_providers=${providerId}&with_watch_monetization_types=flatrate&sort_by=popularity.desc&language=en-US`;
+  const includeMovies = mediaType !== 'tv';
+  const includeTv = mediaType !== 'movie';
 
   const [moviesRes, tvRes] = await Promise.all([
-    fetch(
-      `${process.env.TMDB_URL}discover/movie?${common}&with_original_language=en`
-    ),
-    fetch(
-      `${process.env.TMDB_URL}discover/tv?${common}&with_original_language=en`
-    ),
+    includeMovies
+      ? fetch(
+          `${baseUrl}discover/movie?${common}&with_original_language=en`
+        )
+      : Promise.resolve(null),
+    includeTv
+      ? fetch(
+          `${baseUrl}discover/tv?${common}&with_original_language=en`
+        )
+      : Promise.resolve(null),
   ]);
 
-  if (!moviesRes.ok || !tvRes.ok) {
-    throw new Error('Error fetching provider catalog from TMDB.');
+  if (moviesRes && !moviesRes.ok) {
+    const details = await readTmdbError(moviesRes);
+    throw new Error(
+      `Error fetching TMDB discover/movie (${moviesRes.status} ${moviesRes.statusText})${details ? `: ${details}` : ''}`
+    );
+  }
+
+  if (tvRes && !tvRes.ok) {
+    const details = await readTmdbError(tvRes);
+    throw new Error(
+      `Error fetching TMDB discover/tv (${tvRes.status} ${tvRes.statusText})${details ? `: ${details}` : ''}`
+    );
   }
 
   const [movies, tv] = await Promise.all([
-    moviesRes.json(),
-    tvRes.json(),
+    moviesRes ? moviesRes.json() : Promise.resolve({ results: [] }),
+    tvRes ? tvRes.json() : Promise.resolve({ results: [] }),
   ]);
 
   const movieResults = ((movies.results || []) as TMDBListItem[])

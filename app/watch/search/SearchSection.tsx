@@ -3,6 +3,8 @@ import clsx from 'clsx';
 import Image from 'next/image';
 import { useState } from 'react';
 import { FaCircleXmark } from 'react-icons/fa6';
+import { ImTv } from 'react-icons/im';
+import { MdLocalMovies } from 'react-icons/md';
 import { useDebouncedCallback } from 'use-debounce';
 
 import {
@@ -13,10 +15,20 @@ import { useMainStore } from '@/app/store/providers/main-store-provider';
 
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import SearchResults from './SearchResults';
-import { SearchResultItemType } from './types';
+import { MediaTypeFilter, SearchResultItemType } from './types';
 
 const DEBOUNCE_DELAY = 500;
 const baseImageURL = 'https://www.themoviedb.org/t/p/w92';
+
+const MEDIA_FILTERS: {
+  id: MediaTypeFilter;
+  label: string;
+  Icon?: typeof MdLocalMovies;
+}[] = [
+  { id: 'all', label: 'All' },
+  { id: 'movie', label: 'Movies', Icon: MdLocalMovies },
+  { id: 'tv', label: 'TV', Icon: ImTv },
+];
 
 const SearchSection = () => {
   const { subscriptions } = useMainStore((state) => state);
@@ -28,6 +40,8 @@ const SearchSection = () => {
   const [selectedProviderId, setSelectedProviderId] = useState<
     number | null
   >(null);
+  const [mediaFilter, setMediaFilter] =
+    useState<MediaTypeFilter>('all');
 
   const subscribedProviders = subscriptions
     .map((sub) => sub.streamingProvider)
@@ -38,18 +52,49 @@ const SearchSection = () => {
         Boolean(provider?.providerId)
     );
 
-  const debouncedSearch = useDebouncedCallback(
-    async (value: string) => {
-      if (!value.trim()) {
-        setSearchResults([]);
-        setIsLoading(false);
-        return;
-      }
-      setIsLoading(true);
-      const results = await fetchTMDBResults(value);
-      setSearchResults(results);
+  const runTextSearch = async (
+    value: string,
+    mediaType: MediaTypeFilter
+  ) => {
+    if (!value.trim()) {
+      setSearchResults([]);
       setIsLoading(false);
-    },
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const results = await fetchTMDBResults(value, mediaType);
+      setSearchResults(results);
+    } catch (error) {
+      console.error('Title search failed', error);
+      setSearchResults([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const runProviderSearch = async (
+    providerId: number,
+    mediaType: MediaTypeFilter
+  ) => {
+    setIsLoading(true);
+    try {
+      const results = await fetchTMDBByProvider(
+        providerId,
+        mediaType
+      );
+      setSearchResults(results);
+    } catch (error) {
+      console.error('Provider search failed', error);
+      setSearchResults([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const debouncedSearch = useDebouncedCallback(
+    runTextSearch,
     DEBOUNCE_DELAY
   );
 
@@ -57,13 +102,27 @@ const SearchSection = () => {
     const { value } = e.target;
     setSearchTerm(value);
     setSelectedProviderId(null);
-    debouncedSearch(value);
+    debouncedSearch(value, mediaFilter);
   };
 
   const clearSearch = () => {
     setSearchTerm('');
     setSearchResults([]);
     setSelectedProviderId(null);
+  };
+
+  const handleMediaFilterChange = (next: MediaTypeFilter) => {
+    if (next === mediaFilter) return;
+    setMediaFilter(next);
+
+    if (selectedProviderId != null) {
+      void runProviderSearch(selectedProviderId, next);
+      return;
+    }
+
+    if (searchTerm.trim()) {
+      void runTextSearch(searchTerm, next);
+    }
   };
 
   const handleProviderSelect = async (providerId: number) => {
@@ -74,16 +133,7 @@ const SearchSection = () => {
 
     setSelectedProviderId(providerId);
     setSearchTerm('');
-    setIsLoading(true);
-    try {
-      const results = await fetchTMDBByProvider(providerId);
-      setSearchResults(results);
-    } catch (error) {
-      console.error('Provider search failed', error);
-      setSearchResults([]);
-    } finally {
-      setIsLoading(false);
-    }
+    await runProviderSearch(providerId, mediaFilter);
   };
 
   const selectedProvider = subscribedProviders.find(
@@ -123,6 +173,28 @@ const SearchSection = () => {
             />
           )}
         </label>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          {MEDIA_FILTERS.map(({ id, label, Icon }) => {
+            const isSelected = mediaFilter === id;
+            return (
+              <button
+                key={id}
+                type="button"
+                onClick={() => handleMediaFilterChange(id)}
+                className={clsx(
+                  'inline-flex items-center gap-1.5 border px-2.5 py-1.5 text-sm transition-colors',
+                  isSelected
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-base-300 bg-base-100 text-base-content hover:border-primary/50'
+                )}
+              >
+                {Icon ? <Icon className="h-3.5 w-3.5" /> : null}
+                <span className="font-medium">{label}</span>
+              </button>
+            );
+          })}
+        </div>
 
         <div className="mt-4">
           <p className="text-sm font-medium text-secondary">
@@ -174,7 +246,13 @@ const SearchSection = () => {
       <div className="p-4">
         {selectedProvider && !isLoading && (
           <p className="mb-3 text-sm text-secondary">
-            Popular titles on {selectedProvider.name}
+            Popular{' '}
+            {mediaFilter === 'movie'
+              ? 'movies'
+              : mediaFilter === 'tv'
+                ? 'TV shows'
+                : 'titles'}{' '}
+            on {selectedProvider.name}
           </p>
         )}
         {isLoading ? (

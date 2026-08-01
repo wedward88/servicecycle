@@ -2,10 +2,11 @@
 
 import clsx from 'clsx';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ImTv } from 'react-icons/im';
 import { MdLocalMovies } from 'react-icons/md';
 
+import { filterStandaloneProviders } from '@/app/lib/streamingProviders';
 import { useMainStore } from '@/app/store/providers/main-store-provider';
 
 import {
@@ -13,6 +14,7 @@ import {
   WatchListItemType,
 } from '../watch-list/types';
 import AddToWatchList from './AddToWatchList';
+import PosterLightbox from './PosterLightbox';
 
 type ResultModalProps = {
   result: WatchListItemType;
@@ -40,7 +42,9 @@ const ResultModal = ({
   const modalId = `${watchModal ? 'watch' : 'search'}-modal-${result.id}`;
   const [posterExpanded, setPosterExpanded] = useState(false);
 
-  const providers = [...(watchProviders ?? [])].sort((a, b) => {
+  const providers = filterStandaloneProviders([
+    ...(watchProviders ?? []),
+  ]).sort((a, b) => {
     const aOnPlan = subscriptionSet.has(a.providerId);
     const bOnPlan = subscriptionSet.has(b.providerId);
     if (aOnPlan && !bOnPlan) return -1;
@@ -54,20 +58,6 @@ const ResultModal = ({
   const other = providers.filter(
     (p) => !subscriptionSet.has(p.providerId)
   );
-
-  useEffect(() => {
-    if (!posterExpanded) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.stopPropagation();
-        setPosterExpanded(false);
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [posterExpanded]);
 
   const closeModal = () => {
     setPosterExpanded(false);
@@ -123,135 +113,120 @@ const ResultModal = ({
   };
 
   return (
-    <dialog
-      id={modalId}
-      className="modal modal-bottom sm:modal-middle"
-      onClose={() => setPosterExpanded(false)}
-    >
-      <div className="modal-box relative flex max-h-[85vh] w-full max-w-xl flex-col overflow-hidden rounded-none border border-base-300 p-0 surface">
-        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-base-300 px-4 py-3">
-          <div className="flex min-w-0 items-center gap-2 text-secondary">
-            <span className="shrink-0 text-primary" aria-hidden>
-              {isTV ? <ImTv /> : <MdLocalMovies />}
-            </span>
-            <span className="text-xs font-medium uppercase tracking-[0.14em]">
-              {isTV ? 'TV series' : 'Movie'}
-            </span>
-          </div>
-          <div className="flex shrink-0 items-center gap-1">
-            {!watchModal && (
-              <AddToWatchList
-                isInWatchList={isInWatchList}
-                result={result}
-              />
-            )}
-            <button
-              type="button"
-              onClick={closeModal}
-              className="btn btn-sm btn-circle btn-ghost"
-              aria-label="Close"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-
-        <div className="min-h-0 flex-1 overflow-y-auto no-scrollbar">
-          <div className="flex gap-4 p-4 sm:gap-5 sm:p-5">
-            <div className="w-24 shrink-0 sm:w-32">
-              {result.posterPath ? (
-                <button
-                  type="button"
-                  onClick={() => setPosterExpanded(true)}
-                  className="group relative block w-full cursor-zoom-in border border-base-300 transition-colors hover:border-primary/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                  aria-label={`View larger poster for ${title || 'this title'}`}
-                >
-                  <Image
-                    src={`${TMDB_POSTER_URL}${result.posterPath}`}
-                    alt=""
-                    width={200}
-                    height={300}
-                    className="aspect-[2/3] w-full object-cover"
-                  />
-                  <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-base-100/80 px-1.5 py-1 text-center text-[10px] font-medium uppercase tracking-[0.12em] text-secondary opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-                    Expand
-                  </span>
-                </button>
-              ) : (
-                <div className="flex aspect-[2/3] w-full items-center justify-center border border-base-300 bg-base-200 text-xs text-secondary">
-                  No poster
-                </div>
+    <>
+      <dialog
+        id={modalId}
+        className="modal modal-bottom sm:modal-middle"
+        onClose={() => setPosterExpanded(false)}
+      >
+        <div className="modal-box relative flex max-h-[85vh] w-full max-w-xl flex-col overflow-hidden rounded-none border border-base-300 p-0 surface">
+          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-base-300 px-4 py-3">
+            <div className="flex min-w-0 items-center gap-2 text-secondary">
+              <span className="shrink-0 text-primary" aria-hidden>
+                {isTV ? <ImTv /> : <MdLocalMovies />}
+              </span>
+              <span className="text-xs font-medium uppercase tracking-[0.14em]">
+                {isTV ? 'TV series' : 'Movie'}
+              </span>
+            </div>
+            <div className="flex shrink-0 items-center gap-1">
+              {!watchModal && (
+                <AddToWatchList
+                  isInWatchList={isInWatchList}
+                  result={result}
+                />
               )}
+              <button
+                type="button"
+                onClick={closeModal}
+                className="btn btn-sm btn-circle btn-ghost"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+
+          <div className="min-h-0 flex-1 overflow-y-auto no-scrollbar">
+            <div className="flex gap-4 p-4 sm:gap-5 sm:p-5">
+              <div className="w-24 shrink-0 sm:w-32">
+                {result.posterPath ? (
+                  <button
+                    type="button"
+                    onClick={() => setPosterExpanded(true)}
+                    className="group relative block w-full cursor-zoom-in border border-base-300 transition-colors hover:border-primary/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                    aria-label={`View larger poster for ${title || 'this title'}`}
+                  >
+                    <Image
+                      src={`${TMDB_POSTER_URL}${result.posterPath}`}
+                      alt=""
+                      width={200}
+                      height={300}
+                      className="aspect-[2/3] w-full object-cover"
+                    />
+                    <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-base-100/80 px-1.5 py-1 text-center text-[10px] font-medium uppercase tracking-[0.12em] text-secondary opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+                      Expand
+                    </span>
+                  </button>
+                ) : (
+                  <div className="flex aspect-[2/3] w-full items-center justify-center border border-base-300 bg-base-200 text-xs text-secondary">
+                    No poster
+                  </div>
+                )}
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <h3 className="font-display text-xl font-semibold leading-tight tracking-tight text-base-content sm:text-2xl">
+                  {title || 'Untitled'}
+                </h3>
+                {onPlan.length > 0 && (
+                  <p className="mt-1.5 text-sm font-medium text-primary">
+                    {onPlan.length === 1
+                      ? `Available on ${onPlan[0].name}`
+                      : `Available on ${onPlan.length} of your plans`}
+                  </p>
+                )}
+                <p className="mt-3 text-sm leading-relaxed text-secondary">
+                  {result.overview?.trim()
+                    ? result.overview
+                    : 'No overview available.'}
+                </p>
+              </div>
             </div>
 
-            <div className="min-w-0 flex-1">
-              <h3 className="font-display text-xl font-semibold leading-tight tracking-tight text-base-content sm:text-2xl">
-                {title || 'Untitled'}
-              </h3>
-              {onPlan.length > 0 && (
-                <p className="mt-1.5 text-sm font-medium text-primary">
-                  {onPlan.length === 1
-                    ? `Available on ${onPlan[0].name}`
-                    : `Available on ${onPlan.length} of your plans`}
+            <div className="space-y-4 border-t border-base-300 px-4 py-4 sm:px-5">
+              <p className="text-xs font-medium uppercase tracking-[0.14em] text-secondary">
+                Where to watch
+              </p>
+              {providers.length > 0 ? (
+                <div className="space-y-4">
+                  {renderProviderGroup('On your plans', onPlan, true)}
+                  {renderProviderGroup('Other services', other, false)}
+                </div>
+              ) : (
+                <p className="border border-base-300 bg-base-100 px-3 py-3 text-sm text-secondary">
+                  No streaming providers found for this title.
                 </p>
               )}
-              <p className="mt-3 text-sm leading-relaxed text-secondary">
-                {result.overview?.trim()
-                  ? result.overview
-                  : 'No overview available.'}
-              </p>
             </div>
-          </div>
-
-          <div className="space-y-4 border-t border-base-300 px-4 py-4 sm:px-5">
-            <p className="text-xs font-medium uppercase tracking-[0.14em] text-secondary">
-              Where to watch
-            </p>
-            {providers.length > 0 ? (
-              <div className="space-y-4">
-                {renderProviderGroup('On your plans', onPlan, true)}
-                {renderProviderGroup('Other services', other, false)}
-              </div>
-            ) : (
-              <p className="border border-base-300 bg-base-100 px-3 py-3 text-sm text-secondary">
-                No streaming providers found for this title.
-              </p>
-            )}
           </div>
         </div>
 
-        {posterExpanded && result.posterPath && (
-          <div
-            className="absolute inset-0 z-20 flex items-center justify-center bg-neutral/80 p-4 backdrop-blur-sm"
-            role="dialog"
-            aria-modal="true"
-            aria-label={`Expanded poster for ${title || 'this title'}`}
-            onClick={() => setPosterExpanded(false)}
-          >
-            <button
-              type="button"
-              className="absolute right-3 top-3 z-30 btn btn-sm btn-circle border-0 bg-base-100 text-base-content hover:bg-base-200"
-              aria-label="Close expanded poster"
-              onClick={() => setPosterExpanded(false)}
-            >
-              ✕
-            </button>
-            <Image
-              src={`${TMDB_POSTER_LARGE_URL}${result.posterPath}`}
-              alt={title || 'Poster'}
-              width={780}
-              height={1170}
-              className="max-h-full max-w-full cursor-zoom-out object-contain shadow-lg"
-              priority
-            />
-          </div>
-        )}
-      </div>
+        <form method="dialog" className="modal-backdrop">
+          <button type="submit">close</button>
+        </form>
+      </dialog>
 
-      <form method="dialog" className="modal-backdrop">
-        <button type="submit">close</button>
-      </form>
-    </dialog>
+      {result.posterPath ? (
+        <PosterLightbox
+          open={posterExpanded}
+          onClose={() => setPosterExpanded(false)}
+          src={`${TMDB_POSTER_LARGE_URL}${result.posterPath}`}
+          alt={title || 'Poster'}
+          title={title || 'Poster'}
+        />
+      ) : null}
+    </>
   );
 };
 
