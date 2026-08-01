@@ -6,6 +6,7 @@ import './globals.css';
 import AuthProvider from './api/auth/Provider';
 import MainShell from './components/MainShell';
 import NavBar from './components/NavBar';
+import TmdbAttribution from './components/TmdbAttribution';
 import { MainStoreProvider } from './store/providers/main-store-provider';
 
 const roboto = Roboto({
@@ -39,6 +40,11 @@ export default function RootLayout({
           <MainShell>
             <MainStoreProvider>{children}</MainStoreProvider>
           </MainShell>
+          <footer className="mt-auto border-t border-base-300 bg-base-100">
+            <div className="mx-auto w-full max-w-6xl px-5 py-6 md:px-8">
+              <TmdbAttribution />
+            </div>
+          </footer>
         </AuthProvider>
       </body>
     </html>

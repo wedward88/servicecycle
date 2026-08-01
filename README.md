@@ -44,6 +44,12 @@ A fullstack project to keep track of your streaming subscriptions, and search fo
 - Copy environment variables into `.env` / `.env.local` (`DATABASE_URL`, Google OAuth, `NEXTAUTH_URL`, TMDB keys)
 - Run migrations with Prisma, then `npm run dev`
 
+## Attribution
+
+This product uses the TMDB API but is not endorsed or certified by TMDB.
+
+Streaming provider, TV, and movie data is provided by [TMDB](https://www.themoviedb.org/). The app includes the required TMDB logo and attribution notice in a Credits section.
+
 ## Future Plans
 
 - Add user registration/log in separately from OAuth2.0.
