@@ -1,9 +1,6 @@
-import { z } from 'zod';
+import { subscriptionInputSchema } from '@/services/subscriptions';
 
-const schema = z.object({
-  streamingProviderId: z.number(),
-  id: z.number().optional(),
-  cost: z.string().optional(),
-});
+/** @deprecated Import `subscriptionInputSchema` from `@/services/subscriptions`. */
+const schema = subscriptionInputSchema;
 
 export default schema;
