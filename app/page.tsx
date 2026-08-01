@@ -43,8 +43,8 @@ export default function Home() {
   return (
     <div className="w-full">
       <section className="hero-atmosphere relative">
-        <div className="relative z-10 px-6 py-16 md:px-12 md:py-20 lg:px-16 lg:py-24">
-          <div className="mx-auto flex w-full max-w-3xl items-start gap-3 text-left sm:gap-4 lg:mx-0 lg:max-w-xl">
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-16 md:px-12 md:py-20 lg:px-16 lg:py-24">
+          <div className="mx-auto flex w-full max-w-3xl items-start gap-3 text-left sm:gap-4">
             <motion.div
               variants={fadeUp}
               initial="hidden"
