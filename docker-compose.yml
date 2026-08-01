@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: servicecycle-db
+    restart: unless-stopped
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: servicecycle
+      POSTGRES_PASSWORD: servicecycle
+      POSTGRES_DB: servicecycle
+    volumes:
+      - servicecycle_pgdata:/var/lib/postgresql/data
+
+volumes:
+  servicecycle_pgdata:

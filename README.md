@@ -13,6 +13,7 @@ A fullstack project to keep track of your streaming subscriptions, and search fo
 - TypeScript
 - PostgreSQL
 - OAuth2.0
+- [Motion](https://motion.dev/) for UI animation
 - CI/CD via GitHub Actions
 - Deployed on a dedicated server running Apache2.
 - Streaming provider, TV, and Movie data provided by [TMDB](https://www.themoviedb.org/) (The Movie DB)
@@ -20,20 +21,29 @@ A fullstack project to keep track of your streaming subscriptions, and search fo
 ## Features
 
 - Registration/Login via OAuth2.0 (Google)
-- Streaming Subscription Management
-  - Add subscriptions (select from a pre-fetched list of providers, include cost)
-  - Edit subscriptions
-  - Delete subscriptions
-  - Subscriptions total monthly cost
-- TV Show and Movie Search
-  - See where you can watch a particular show or movie
-  - Confirm if you're subscribed to a streaming provider that has the show or movie you're interested in watching
-- Watch List
-  - Add TV shows or movies to a watch list
-  - See which shows or movies you have an active subscription to view
-  - Delete from watch list
+- Branded landing page with product mocks and motion-aware animations
+- Streaming subscription management
+  - Multi-select popular services with suggested US list prices (editable for grandfathered or different plans)
+  - Search all providers when something isn’t in the popular list
+  - Edit and delete subscriptions
+  - Monthly stack total across services
+- TV show and movie search
+  - Search by title
+  - Browse popular titles by your current subscriptions
+  - Poster cards with watch-list controls
+  - Detail modal with overview, availability on your plans, and expandable poster
+- Watch list
+  - Add or remove titles from search results
+  - See which titles are available on your current plans
+  - Drag to reorder (order is persisted)
+  - Remove titles from the list
+
+## Local development
+
+- PostgreSQL via `docker-compose.yml` (port `5433` by default)
+- Copy environment variables into `.env` / `.env.local` (`DATABASE_URL`, Google OAuth, `NEXTAUTH_URL`, TMDB keys)
+- Run migrations with Prisma, then `npm run dev`
 
 ## Future Plans
 
 - Add user registration/log in separately from OAuth2.0.
-- Add drag to reorder functionality/animation to watch list

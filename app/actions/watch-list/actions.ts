@@ -54,6 +54,7 @@ export const getUserWatchList = async (user: User) => {
     },
     include: {
       watchListOnItems: {
+        orderBy: { sortOrder: 'asc' },
         include: {
           watchListItem: {
             // Fetch the full WatchListItem details
@@ -154,6 +155,12 @@ export const addToWatchList = async (
     );
   }
 
+  const maxOrder = await prisma.watchListOnItems.aggregate({
+    where: { watchListId: watchList.id },
+    _max: { sortOrder: true },
+  });
+  const nextOrder = (maxOrder._max.sortOrder ?? -1) + 1;
+
   await prisma.watchListOnItems.upsert({
     where: {
       watchListId_watchListItemId: {
@@ -165,6 +172,7 @@ export const addToWatchList = async (
     create: {
       watchList: { connect: { id: watchList.id } },
       watchListItem: { connect: { id: watchListItem.id } },
+      sortOrder: nextOrder,
     },
   });
 
@@ -244,5 +252,46 @@ export const removeFromWatchList = async (
   return (
     watchList?.watchListOnItems.map((item) => item.watchListItem) ??
     []
+  );
+};
+
+export const reorderWatchList = async (
+  orderedItemIds: number[]
+): Promise<void> => {
+  const user = await validateSessionUser();
+  const watchList = await prisma.watchList.findUnique({
+    where: { userId: user.id },
+    select: { id: true },
+  });
+
+  if (!watchList) {
+    throw new Error('Watch list not found.');
+  }
+
+  const existing = await prisma.watchListOnItems.findMany({
+    where: { watchListId: watchList.id },
+    select: { watchListItemId: true },
+  });
+  const existingIds = new Set(existing.map((row) => row.watchListItemId));
+
+  if (
+    orderedItemIds.length !== existingIds.size ||
+    orderedItemIds.some((id) => !existingIds.has(id))
+  ) {
+    throw new Error('Invalid watch list order.');
+  }
+
+  await prisma.$transaction(
+    orderedItemIds.map((watchListItemId, index) =>
+      prisma.watchListOnItems.update({
+        where: {
+          watchListId_watchListItemId: {
+            watchListId: watchList.id,
+            watchListItemId,
+          },
+        },
+        data: { sortOrder: index },
+      })
+    )
   );
 };

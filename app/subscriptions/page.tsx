@@ -23,7 +23,6 @@ const SubscriptionPage = () => {
 
     const fetchUserSubscriptions = async () => {
       const userEmail = session?.user?.email;
-      // Get user and their subscriptions
       if (typeof userEmail === 'string') {
         const userSubs = await getUserSubscriptions(userEmail);
         const subs = userSubs?.subscriptions || [];
@@ -37,30 +36,45 @@ const SubscriptionPage = () => {
   }, [session, status, setSubscriptions]);
 
   const noSubs = subscriptions.length === 0;
+  const firstName = session?.user?.name?.split(' ')[0] || 'Your';
 
   return (
-    <div className="flex flex-col items-start md:items-center space-y-10 mt-5">
-      <h1 className="flex w-full text-2xl md:text-3xl items-start md:justify-center">
-        {session?.user?.name}&apos;s subscriptions
-      </h1>
-      <div className="flex flex-col items-start">
-        <div className="flex items-center text-xl md:text-2xl">
-          {noSubs && 'Click'}
-          <SubForm
-            formTitle="Create New Subscription"
-            openText="Create New"
-            submitText="Save"
-            formFields={SubscriptionFormFields}
-          />
-          {noSubs && 'to get started.'}
+    <div className="space-y-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-sm font-medium uppercase tracking-[0.14em] text-accent">
+            Subscriptions
+          </p>
+          <h1 className="mt-1 font-display text-3xl font-semibold tracking-tight text-base-content md:text-4xl">
+            {firstName}&apos;s monthly stack
+          </h1>
         </div>
-        {!noSubs && (
-          <div>
+        <SubForm
+          formTitle="Create New Subscription"
+          openText="Create New"
+          submitText="Save"
+          formFields={SubscriptionFormFields}
+        />
+      </div>
+
+      {noSubs ? (
+        <div className="border border-base-300 surface px-6 py-10 text-secondary">
+          <p className="text-lg">
+            No subscriptions yet. Click{' '}
+            <span className="font-medium text-primary">Create New</span>{' '}
+            to get started.
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-0 overflow-hidden border border-base-300 lg:grid-cols-[1.5fr_1fr]">
+          <div className="surface">
             <SubTable userSubscriptions={subscriptions} />
+          </div>
+          <div className="border-t border-base-300 surface-muted lg:border-l lg:border-t-0">
             <SubTotal userSubscriptions={subscriptions} />
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -118,8 +118,9 @@ model WatchList {
 model WatchListOnItems {
   watchListId     Int
   watchListItemId Int
-  watchList       WatchList     @relation(fields: [watchListId], references: [id], onDelete: Cascade)
-  watchListItem   WatchListItem @relation(fields: [watchListItemId], references: [id], onDelete: Cascade)
+  sortOrder       Int            @default(0) @map("sort_order")
+  watchList       WatchList      @relation(fields: [watchListId], references: [id], onDelete: Cascade)
+  watchListItem   WatchListItem  @relation(fields: [watchListItemId], references: [id], onDelete: Cascade)
 
   @@id([watchListId, watchListItemId])
   @@map("watch_list_on_items")

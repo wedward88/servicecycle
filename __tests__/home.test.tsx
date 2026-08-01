@@ -7,17 +7,17 @@ describe('Home', () => {
     render(<Home />);
     expect(
       screen.getByRole('heading', {
-        name: /Welcome to ServiceCycle/i,
+        name: /Stop juggling streaming apps/i,
       })
     ).toBeInTheDocument();
+    expect(screen.getByText('ServiceCycle')).toBeInTheDocument();
   });
 
   it('should render get started button', () => {
     render(<Home />);
-    expect(
-      screen.getByRole('link', {
-        name: 'Get started',
-      })
-    ).toBeInTheDocument();
+    const buttons = screen.getAllByRole('button', {
+      name: 'Get started',
+    });
+    expect(buttons.length).toBeGreaterThanOrEqual(1);
   });
 });

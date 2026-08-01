@@ -16,14 +16,19 @@ const SubTotal = ({ userSubscriptions }: SubTotalProps) => {
 
     return total.toFixed(2);
   };
+
   return (
-    <div className="flex flex-col md:items-center w-full mt-10 space-y-10">
-      <h1 className="text-4xl underline decoration-primary decoration-4">
+    <div className="flex h-full flex-col justify-center px-6 py-8 md:px-8">
+      <p className="text-sm uppercase tracking-[0.14em] text-secondary">
         Total
-      </h1>
-      <div className="text-3xl text-accent">
-        ${calcTotalCost()} /month
-      </div>
+      </p>
+      <p className="mt-2 font-display text-4xl font-semibold tracking-tight text-primary md:text-5xl">
+        ${calcTotalCost()}
+      </p>
+      <p className="mt-2 text-secondary">
+        per month across {userSubscriptions.length} service
+        {userSubscriptions.length === 1 ? '' : 's'}
+      </p>
     </div>
   );
 };

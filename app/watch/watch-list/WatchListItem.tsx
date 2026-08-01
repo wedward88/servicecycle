@@ -1,10 +1,8 @@
 'use client';
-import { motion } from 'motion/react';
-import Image from 'next/image';
-import { FaCheck } from 'react-icons/fa6';
+
+import { Reorder, useDragControls } from 'motion/react';
 import { ImTv } from 'react-icons/im';
 import { MdLocalMovies } from 'react-icons/md';
-import { RiDeleteBin6Fill } from 'react-icons/ri';
 
 import { useMainStore } from '@/app/store/providers/main-store-provider';
 
@@ -13,80 +11,81 @@ import { WatchListItemType } from './types';
 interface WatchListItemProps {
   item: WatchListItemType;
   onClick: () => void;
+  onDragEnd: () => void;
 }
 
-const MotionTr = motion.tr;
-const itemVariants = {
-  hidden: {
-    opacity: 0,
-    x: 50,
-  },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.5, type: 'spring' },
-  },
-};
-const baseImageURL = 'https://www.themoviedb.org/t/p/w500';
-
-const WatchListItem = ({ item, onClick }: WatchListItemProps) => {
+const WatchListItem = ({
+  item,
+  onClick,
+  onDragEnd,
+}: WatchListItemProps) => {
   const { subscriptionIds, removeFromWatchList } = useMainStore(
     (state) => state
   );
+  const controls = useDragControls();
   const subscriptionSet = new Set(subscriptionIds);
-  const isSubscribed =
+  const isAvailable =
     item.streamingProviders &&
     item.streamingProviders.some((provider) =>
       subscriptionSet.has(provider.providerId)
     );
 
   return (
-    <MotionTr
-      className="relative font-bold hover:bg-base-300"
-      variants={itemVariants}
+    <Reorder.Item
+      value={item}
+      dragListener={false}
+      dragControls={controls}
+      onDragEnd={onDragEnd}
+      className="flex items-center justify-between gap-2 surface px-2 py-2.5 sm:px-3"
     >
-      <td className="text-xl md:text-3xl">
-        {item.mediaType === 'tv' ? <ImTv /> : <MdLocalMovies />}
-      </td>
-      <td className="hidden md:flex">
-        <Image
-          src={`${baseImageURL}${item.posterPath}`}
-          alt={
-            item.originalTitle ||
-            item.originalName ||
-            'No title available.'
-          }
-          style={{
-            width: 'auto',
-            height: 'auto',
-          }}
-          width={100}
-          height={100}
+      <div className="flex min-w-0 items-center gap-1.5">
+        <button
+          type="button"
+          aria-label={`Drag to reorder ${item.originalName || item.originalTitle}`}
+          className="shrink-0 cursor-grab touch-none px-1 py-1 text-secondary transition-colors hover:text-base-content active:cursor-grabbing"
+          onPointerDown={(event) => controls.start(event)}
+        >
+          <svg
+            viewBox="0 0 16 16"
+            className="h-4 w-4"
+            fill="currentColor"
+            aria-hidden
+          >
+            <circle cx="5" cy="4" r="1.25" />
+            <circle cx="11" cy="4" r="1.25" />
+            <circle cx="5" cy="8" r="1.25" />
+            <circle cx="11" cy="8" r="1.25" />
+            <circle cx="5" cy="12" r="1.25" />
+            <circle cx="11" cy="12" r="1.25" />
+          </svg>
+        </button>
+        <span className="shrink-0 text-sm text-secondary">
+          {item.mediaType === 'tv' ? <ImTv /> : <MdLocalMovies />}
+        </span>
+        <button
+          type="button"
+          className="min-w-0 truncate text-left text-sm font-medium text-base-content hover:text-primary"
           onClick={onClick}
-          priority
-          className="w-full max-h-[200px] object-cover rounded-xl aspect-[3/2.2] hover:cursor-pointer"
-        />
-      </td>
-      <td>
-        <div className="flex items-center gap-3">
-          <div>
-            <div
-              className="font-bold text-xl line-clamp-1 hover:cursor-pointer"
-              onClick={onClick}
-            >
-              {item.originalName || item.originalTitle}
-            </div>
-          </div>
-        </div>
-      </td>
-      <td>{isSubscribed ? <FaCheck className="text-xl" /> : ''}</td>
-      <td className="text-2xl md:text-3xl">
-        <RiDeleteBin6Fill
-          className="hover:cursor-pointer hover:text-red-400"
+        >
+          {item.originalName || item.originalTitle}
+        </button>
+      </div>
+      <div className="flex shrink-0 items-center gap-2">
+        {isAvailable && (
+          <span className="text-xs font-medium text-primary">
+            Available
+          </span>
+        )}
+        <button
+          type="button"
+          aria-label="Remove from watch list"
+          className="flex h-7 w-7 items-center justify-center text-lg leading-none text-secondary transition-colors hover:bg-base-200 hover:text-error"
           onClick={() => removeFromWatchList(item.mediaId)}
-        />
-      </td>
-    </MotionTr>
+        >
+          ×
+        </button>
+      </div>
+    </Reorder.Item>
   );
 };
 

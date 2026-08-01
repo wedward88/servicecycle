@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 
+import { COMMON_STREAMING_PROVIDER_IDS } from '@/app/lib/commonProviders';
 import prisma from '@/prisma/client';
 
 import { Subscription } from '../../subscriptions/types';
@@ -22,6 +23,25 @@ export async function searchStreamingProvider(query: string) {
   });
 
   return providers;
+}
+
+export async function getCommonStreamingProviders() {
+  const providers = await prisma.streamingProvider.findMany({
+    where: {
+      providerId: {
+        in: [...COMMON_STREAMING_PROVIDER_IDS],
+      },
+    },
+  });
+
+  const order = new Map<number, number>(
+    COMMON_STREAMING_PROVIDER_IDS.map((id, index) => [id, index])
+  );
+
+  return providers.sort(
+    (a, b) =>
+      (order.get(a.providerId) ?? 99) - (order.get(b.providerId) ?? 99)
+  );
 }
 
 export async function getUserSubscriptions(email: string) {

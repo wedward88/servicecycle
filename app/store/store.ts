@@ -16,6 +16,7 @@ import {
 import {
   addToWatchList,
   removeFromWatchList,
+  reorderWatchList,
 } from '../actions/watch-list/actions';
 import { WatchListItemType } from '../watch/watch-list/types';
 
@@ -25,6 +26,8 @@ export interface MainStoreInterface {
   setUserWatchList: (newList: WatchListItemType[]) => void;
   addToWatchList: (item: WatchListItemType) => void;
   removeFromWatchList: (mediaId: number) => void;
+  reorderWatchList: (newList: WatchListItemType[]) => void;
+  persistWatchListOrder: () => Promise<void>;
   subscriptions: Subscription[];
   subscriptionIds: number[];
   setSubscriptions: (newList: DBSubscription[]) => void;
@@ -99,6 +102,22 @@ export const createMainStore = () => {
                 ],
               }));
             }
+          }
+        },
+
+        reorderWatchList: (newList: WatchListItemType[]) => {
+          set({
+            userWatchList: newList,
+            watchListMediaIds: newList.map((item) => item.mediaId),
+          });
+        },
+
+        persistWatchListOrder: async () => {
+          const orderedIds = get().userWatchList.map((item) => item.id);
+          try {
+            await reorderWatchList(orderedIds);
+          } catch (error) {
+            console.error('Failed to persist watch list order', error);
           }
         },
 

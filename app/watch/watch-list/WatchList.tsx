@@ -1,5 +1,6 @@
 'use client';
-import { motion } from 'motion/react';
+
+import { Reorder } from 'motion/react';
 
 import { useMainStore } from '@/app/store/providers/main-store-provider';
 
@@ -7,14 +8,11 @@ import ResultModal from '../components/ResultModal';
 import WatchListItem from './WatchListItem';
 
 const WatchList = () => {
-  const { userWatchList } = useMainStore((state) => state);
-
-  const MotionTable = motion.table;
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
-  };
+  const {
+    userWatchList,
+    reorderWatchList,
+    persistWatchListOrder,
+  } = useMainStore((state) => state);
 
   const noWatchList = !userWatchList || userWatchList.length === 0;
 
@@ -27,46 +25,49 @@ const WatchList = () => {
   };
 
   return (
-    <section className="flex flex-col w-full md:w-[50vw] items-center">
-      <h1 className="text-2xl">Watch List</h1>
+    <section className="overflow-hidden border border-base-300 surface">
+      <div className="flex items-center justify-between border-b border-base-300 px-4 py-3">
+        <div>
+          <h2 className="font-display text-base font-semibold text-base-content">
+            Watch list
+          </h2>
+          {!noWatchList && (
+            <p className="mt-0.5 text-xs text-secondary">
+              Drag to reorder
+            </p>
+          )}
+        </div>
+        <p className="text-xs text-secondary">
+          {noWatchList ? '0' : userWatchList.length}
+        </p>
+      </div>
+
       {noWatchList ? (
-        <p className="bg-base-200 rounded-lg p-5">
-          Search for TV shows or movies to add them to your watch
-          list.
+        <p className="px-4 py-5 text-sm text-secondary">
+          Save titles from search to build your list.
         </p>
       ) : (
-        <div>
-          <MotionTable
-            className="table table-xs rounded-t-xl rounded-b-none bg-base-200 mt-2"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
+        <>
+          <Reorder.Group
+            axis="y"
+            values={userWatchList}
+            onReorder={reorderWatchList}
+            className="max-h-[28rem] divide-y divide-base-300 overflow-y-auto no-scrollbar lg:max-h-[min(70vh,36rem)]"
           >
-            <thead>
-              <tr>
-                <th />
-                <th className="hidden md:block text-2xl">Poster</th>
-                <th className="text-xl md:text-2xl">Name</th>
-                <th className="text-xl md:text-2xl"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {userWatchList.map((listItem, idx) => (
-                <WatchListItem
-                  onClick={() => watchListItemClick(listItem.id)}
-                  key={idx}
-                  item={listItem}
-                />
-              ))}
-            </tbody>
-          </MotionTable>
-          <p className=" w-full bg-base-200 rounded-b-xl p-5">
-            Note: A check mark indicates an active subscription for
-            that line item.
-          </p>
-          {userWatchList.map((listItem, idx) => (
+            {userWatchList.map((listItem) => (
+              <WatchListItem
+                key={listItem.id}
+                item={listItem}
+                onClick={() => watchListItemClick(listItem.id)}
+                onDragEnd={() => {
+                  void persistWatchListOrder();
+                }}
+              />
+            ))}
+          </Reorder.Group>
+          {userWatchList.map((listItem) => (
             <ResultModal
-              key={idx}
+              key={`modal-${listItem.id}`}
               result={listItem}
               title={listItem.originalName || listItem.originalTitle}
               isTV={listItem.mediaType === 'tv'}
@@ -75,7 +76,7 @@ const WatchList = () => {
               watchModal={true}
             />
           ))}
-        </div>
+        </>
       )}
     </section>
   );

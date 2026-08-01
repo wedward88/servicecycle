@@ -1,20 +1,18 @@
-import { motion } from 'motion/react';
+'use client';
 
-const MotionDiv = motion.div;
+import { motion, useReducedMotion } from 'motion/react';
+
+import { fadeIn, transitionBase } from '@/app/lib/motion';
+
 const Error = ({ message }: { message: string }) => {
-  const itemVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.5, ease: 'easeInOut' },
-    },
-  };
+  const reduceMotion = useReducedMotion();
 
   return (
-    <MotionDiv
-      variants={itemVariants}
-      initial="hidden"
+    <motion.div
+      variants={fadeIn}
+      initial={reduceMotion ? false : 'hidden'}
       animate="visible"
+      transition={reduceMotion ? { duration: 0 } : transitionBase}
       role="alert"
       className="flex h-12 alert alert-error text-sm text-white"
     >
@@ -32,7 +30,7 @@ const Error = ({ message }: { message: string }) => {
         />
       </svg>
       <span>{message}</span>
-    </MotionDiv>
+    </motion.div>
   );
 };
 

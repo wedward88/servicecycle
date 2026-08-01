@@ -1,6 +1,7 @@
 'use client';
+
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ImTv } from 'react-icons/im';
 import { MdLocalMovies } from 'react-icons/md';
 
@@ -23,49 +24,95 @@ const ResultCard = ({ result, isInWatchList }: ResultCardProps) => {
   const [searchResult, setSearchResult] = useState<WatchListItemType>(
     mapSearchResultToWatchListItem(result, [])
   );
+  const [isOpening, setIsOpening] = useState(false);
+  const [pendingOpen, setPendingOpen] = useState(false);
 
-  const resultClick = async (type: string, id: number) => {
-    const wp = await fetchWatchProviders(type, id);
-    const watchResult = mapSearchResultToWatchListItem(result, wp);
-    setSearchResult(watchResult);
+  useEffect(() => {
+    if (!pendingOpen) return;
 
-    const modal = document.getElementById(`search-modal-${id}`);
+    const modal = document.getElementById(
+      `search-modal-${result.id}`
+    ) as HTMLDialogElement | null;
+    modal?.showModal();
+    setPendingOpen(false);
+  }, [pendingOpen, searchResult, result.id]);
 
-    if (modal) {
-      (modal as HTMLDialogElement).showModal();
+  const resultClick = async () => {
+    if (isOpening) return;
+
+    setIsOpening(true);
+    try {
+      const wp = await fetchWatchProviders(
+        result.media_type,
+        result.id
+      );
+      setSearchResult(mapSearchResultToWatchListItem(result, wp));
+      setPendingOpen(true);
+    } finally {
+      setIsOpening(false);
     }
   };
 
   const isTV = result.media_type === 'tv';
   const title = isTV ? result.original_name : result.original_title;
+  const hasPoster = Boolean(result.poster_path);
 
   return (
-    <div className="relative w-full">
-      <AddToWatchList
-        className="absolute top-2 right-2 text-5xl rounded-badge backdrop-contrast-200 backdrop-blur-lg hover:cursor-pointer z-10"
-        isInWatchList={isInWatchList}
-        result={searchResult}
-      />
-      <div
-        onClick={() => resultClick(result.media_type, result.id)}
-        className="card bg-base-300 shadow-xl w-full max-w-72 mx-auto rounded-3xl hover:cursor-pointer"
+    <div className="group flex h-full flex-col overflow-hidden border border-base-300 bg-base-100 transition-colors hover:border-primary/40">
+      <button
+        type="button"
+        onClick={resultClick}
+        disabled={isOpening}
+        className="w-full text-left disabled:cursor-wait"
       >
-        <figure>
-          <Image
-            src={`${baseImageURL}${result.poster_path}`}
-            alt={title}
-            width={300}
-            height={100}
-            className="w-full max-h-[300px] object-top object-cover aspect-[3/2.2]"
-          />
-        </figure>
-        <div className="card-body flex flex-row">
-          <div className="flex items-center text-2xl text-primary">
-            {isTV ? <ImTv /> : <MdLocalMovies />}
-          </div>
-          <h2 className="card-title line-clamp-1 cursor-pointer border-b-4 border-base-300">{`${title}`}</h2>
+        <div className="relative aspect-[2/3] w-full overflow-hidden bg-base-300">
+          {hasPoster ? (
+            <Image
+              src={`${baseImageURL}${result.poster_path}`}
+              alt=""
+              width={300}
+              height={450}
+              className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center px-3 text-center text-xs text-secondary">
+              No poster
+            </div>
+          )}
+          {isOpening && (
+            <div className="absolute inset-0 flex items-center justify-center bg-base-100/50 backdrop-blur-[1px]">
+              <span className="loading loading-spinner loading-md text-primary" />
+            </div>
+          )}
         </div>
+      </button>
+
+      <div className="flex flex-1 flex-col gap-2 px-3 py-3">
+        <button
+          type="button"
+          onClick={resultClick}
+          disabled={isOpening}
+          className="min-w-0 flex-1 text-left disabled:cursor-wait"
+        >
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.12em] text-secondary">
+            <span className="text-primary" aria-hidden>
+              {isTV ? <ImTv /> : <MdLocalMovies />}
+            </span>
+            {isTV ? 'TV' : 'Movie'}
+          </span>
+          <h2 className="mt-1 line-clamp-2 min-h-[2.5rem] font-medium leading-snug text-base-content">
+            {title}
+          </h2>
+        </button>
+
+        <AddToWatchList
+          compact
+          className="mt-auto w-full"
+          isInWatchList={isInWatchList}
+          result={searchResult}
+        />
       </div>
+
       <ResultModal
         result={searchResult}
         title={title}

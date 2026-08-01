@@ -1,7 +1,8 @@
 'use client';
-import clsx from 'clsx';
-import { motion } from 'motion/react';
 
+import { motion, useReducedMotion } from 'motion/react';
+
+import { fadeIn, transitionBase } from '@/app/lib/motion';
 import { useMainStore } from '@/app/store/providers/main-store-provider';
 
 import ResultCard from '../components/ResultCard';
@@ -10,60 +11,35 @@ import { SearchResultItemType } from './types';
 type SearchResultsProps = {
   searchResults: SearchResultItemType[];
 };
-const MotionUl = motion.ul;
-const MotionLi = motion.li;
 
 const SearchResults = ({ searchResults }: SearchResultsProps) => {
   const { watchListMediaIds } = useMainStore((state) => state);
   const watchListSet = new Set(watchListMediaIds);
+  const reduceMotion = useReducedMotion();
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0 },
-  };
-
-  const renderItems = () => {
-    const results = searchResults.map((result, idx) => {
-      return (
-        <MotionLi
-          key={idx}
-          variants={itemVariants}
-          whileHover={{ scale: 1.05 }}
-        >
-          <ResultCard
-            isInWatchList={watchListSet.has(result.id)}
-            result={result}
-          />
-        </MotionLi>
-      );
-    });
-
-    return results;
-  };
-
-  const numColumns = Math.min(searchResults.length, 3); // Max of 3 columns
+  if (searchResults.length === 0) {
+    return null;
+  }
 
   return (
-    <div className="w-full flex justify-center">
-      <MotionUl
-        className={clsx(
-          'grid gap-4 grid-cols-1', // Default 1 column for small screens
-          numColumns === 2 && 'md:grid-cols-2',
-          numColumns === 2 && 'lg:grid-cols-2',
-          numColumns === 3 && 'md:grid-cols-3',
-          numColumns === 3 && 'lg:grid-cols-3'
-        )}
-        variants={containerVariants}
-        initial="hidden"
+    <div className="w-full">
+      <motion.ul
+        key={searchResults.map((r) => r.id).join('-')}
+        className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5"
+        variants={fadeIn}
+        initial={reduceMotion ? false : 'hidden'}
         animate="visible"
+        transition={reduceMotion ? { duration: 0 } : transitionBase}
       >
-        {renderItems()}
-      </MotionUl>
+        {searchResults.map((result) => (
+          <li key={`${result.media_type}-${result.id}`}>
+            <ResultCard
+              isInWatchList={watchListSet.has(result.id)}
+              result={result}
+            />
+          </li>
+        ))}
+      </motion.ul>
     </div>
   );
 };

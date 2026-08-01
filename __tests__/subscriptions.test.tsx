@@ -10,6 +10,8 @@ jest.mock('next-auth/react', () => ({
 
 jest.mock('../app/actions/subscription/actions', () => ({
   getUserSubscriptions: jest.fn(),
+  getCommonStreamingProviders: jest.fn().mockResolvedValue([]),
+  searchStreamingProvider: jest.fn().mockResolvedValue([]),
 }));
 
 jest.mock('../app/store/providers/main-store-provider', () => ({
@@ -50,6 +52,7 @@ describe('SubscriptionPage', () => {
     const setSubscriptions = jest.fn();
     (useMainStore as jest.Mock).mockReturnValue({
       subscriptions: mockSubscriptions,
+      subscriptionIds: [],
       setSubscriptions,
     });
   });
@@ -58,7 +61,7 @@ describe('SubscriptionPage', () => {
     render(<SubscriptionPage />);
 
     expect(
-      screen.getByText("Mark Scout's subscriptions")
+      screen.getByText("Mark's monthly stack")
     ).toBeInTheDocument();
   });
 
@@ -70,7 +73,7 @@ describe('SubscriptionPage', () => {
         screen.getByText(sub.streamingProvider.name)
       ).toBeInTheDocument();
 
-      expect(screen.getByText(sub.cost)).toBeInTheDocument();
+      expect(screen.getByText(`$${sub.cost}`)).toBeInTheDocument();
     });
     const editButtons = screen.getAllByText('Edit');
     expect(editButtons).toHaveLength(mockSubscriptions.length);

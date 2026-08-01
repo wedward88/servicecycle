@@ -1,15 +1,19 @@
 import { signOut } from 'next-auth/react';
 
-const SignOutLink = () => {
+type SignOutButtonProps = {
+  className?: string;
+};
+
+const SignOutButton = ({ className }: SignOutButtonProps) => {
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/' }); // This ensures the user is redirected to '/' after sign out
+    await signOut({ callbackUrl: '/' });
   };
 
   return (
-    <button onClick={handleSignOut} className="">
-      Sign Out
+    <button type="button" onClick={handleSignOut} className={className}>
+      Sign out
     </button>
   );
 };
 
-export default SignOutLink;
+export default SignOutButton;

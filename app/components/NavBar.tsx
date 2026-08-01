@@ -1,83 +1,198 @@
 'use client';
 import clsx from 'clsx';
+import { motion, useReducedMotion } from 'motion/react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
-import SignOutLink from './SignOut';
+import { menuEnter, transitionFast } from '@/app/lib/motion';
+
+import SignOutButton from './SignOut';
 
 const NavBar = () => {
   const { status, data: session } = useSession();
-  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
 
-  const toggleDropdown = () => setIsOpen(!isOpen);
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node)
+      ) {
+        setMenuOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false);
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  const linkClass = (href: string) =>
+    clsx(
+      'text-sm font-medium transition-colors underline-offset-4',
+      pathname?.startsWith(href)
+        ? 'text-primary underline decoration-primary/40'
+        : 'text-secondary hover:text-primary'
+    );
+
+  const firstName = session?.user?.name?.split(' ')[0];
+  const email = session?.user?.email;
+  const image = session?.user?.image;
 
   return (
-    <div
+    <header
       className={clsx(
-        'navbar bg-base-100 justify-between',
+        'w-full border-b border-base-300 surface',
         status === 'unauthenticated' && 'hidden',
-        status === 'authenticated' && 'flex'
+        (status === 'authenticated' || status === 'loading') &&
+          'block'
       )}
     >
-      {status === 'unauthenticated' && <></>}
-      {status === 'loading' && <div>Loading...</div>}
-      {status === 'authenticated' && (
-        <>
-          <a className="text-3xl mr-5 font-thin text-primary underline decoration-4 decoration-base-200">
-            ServiceCycle
-          </a>
-          <div className="gap-2">
-            <div className="flex-1 space-x-5 whitespace-nowrap underline decoration-1 decoration-accent hidden md:flex">
-              <Link href="/subscriptions">Subscriptions</Link>
-              <Link href="/watch">Watch List</Link>
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 md:h-[4.25rem] md:px-8">
+        {status === 'loading' && (
+          <p className="text-sm text-secondary">Loading...</p>
+        )}
+        {status === 'authenticated' && (
+          <>
+            <div className="flex items-center gap-8">
+              <Link
+                href="/subscriptions"
+                className="flex shrink-0 items-center gap-2.5"
+              >
+                <Image
+                  src="/servicecycle-mark.png"
+                  alt=""
+                  width={48}
+                  height={48}
+                  className="h-8 w-8 shrink-0 object-contain md:h-9 md:w-9"
+                  priority
+                />
+                <span className="font-display text-xl font-medium leading-none tracking-tight text-primary md:text-2xl">
+                  ServiceCycle
+                </span>
+              </Link>
+              <nav className="hidden items-center gap-5 md:flex">
+                <Link
+                  href="/subscriptions"
+                  className={linkClass('/subscriptions')}
+                >
+                  Subscriptions
+                </Link>
+                <Link href="/watch" className={linkClass('/watch')}>
+                  Watch List
+                </Link>
+              </nav>
             </div>
 
-            <div
-              className="dropdown dropdown-end"
-              data-toggle="dropdown"
-            >
-              <div
-                tabIndex={0}
-                role="button"
-                className="btn btn-ghost btn-circle avatar"
+            <div className="relative" ref={menuRef}>
+              <button
+                type="button"
+                className="flex items-center gap-2 rounded-full border border-base-300 bg-base-100 py-1 pl-1 pr-2.5 transition-colors hover:border-primary/40"
+                aria-expanded={menuOpen}
+                aria-haspopup="menu"
+                onClick={() => setMenuOpen((open) => !open)}
               >
-                <div className="w-10 rounded-full">
+                {image ? (
                   <Image
                     alt=""
-                    width="30"
-                    height="30"
-                    className="rounded-full"
-                    onClick={toggleDropdown}
-                    src={session.user?.image || ''}
+                    width={32}
+                    height={32}
+                    className="h-8 w-8 rounded-full object-cover"
+                    src={image}
                   />
-                </div>
-              </div>
-              {isOpen && (
-                <ul
-                  tabIndex={0}
-                  className="menu menu-md dropdown-content bg-base-content text-base-200 font-bold rounded-box z-[1] mt-3 w-auto p-2 shadow"
-                  onClick={toggleDropdown}
+                ) : (
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-sm font-medium text-primary">
+                    {(firstName || 'U').charAt(0)}
+                  </span>
+                )}
+                {firstName && (
+                  <span className="hidden max-w-[8rem] truncate text-sm font-medium text-base-content sm:block">
+                    {firstName}
+                  </span>
+                )}
+                <svg
+                  viewBox="0 0 16 16"
+                  className={clsx(
+                    'h-3.5 w-3.5 text-secondary transition-transform',
+                    menuOpen && 'rotate-180'
+                  )}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  aria-hidden
                 >
-                  <li>
-                    <Link href="/watch" className="whitespace-nowrap">
+                  <path d="M4 6l4 4 4-4" strokeLinecap="round" />
+                </svg>
+              </button>
+
+              {menuOpen && (
+                <motion.div
+                  role="menu"
+                  variants={menuEnter}
+                  initial={reduceMotion ? false : 'hidden'}
+                  animate="visible"
+                  transition={
+                    reduceMotion ? { duration: 0 } : transitionFast
+                  }
+                  className="absolute right-0 z-20 mt-2 w-60 overflow-hidden rounded-md border border-base-300 surface shadow-sm"
+                >
+                  <div className="border-b border-base-300 px-4 py-3">
+                    <p className="truncate text-sm font-medium text-base-content">
+                      {session.user?.name}
+                    </p>
+                    {email && (
+                      <p className="truncate text-xs text-secondary">
+                        {email}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col p-1 md:hidden">
+                    <Link
+                      href="/subscriptions"
+                      role="menuitem"
+                      className="rounded px-3 py-2 text-sm text-base-content hover:bg-base-200"
+                    >
+                      Subscriptions
+                    </Link>
+                    <Link
+                      href="/watch"
+                      role="menuitem"
+                      className="rounded px-3 py-2 text-sm text-base-content hover:bg-base-200"
+                    >
                       Watch List
                     </Link>
-                  </li>
-                  <li>
-                    <Link href="/subscriptions">Subscriptions</Link>
-                  </li>
-                  <li>
-                    <SignOutLink />
-                  </li>
-                </ul>
+                  </div>
+
+                  <div className="border-t border-base-300 p-1">
+                    <SignOutButton className="w-full rounded px-3 py-2 text-left text-sm text-secondary transition-colors hover:bg-base-200 hover:text-base-content" />
+                  </div>
+                </motion.div>
               )}
             </div>
-          </div>
-        </>
-      )}
-    </div>
+          </>
+        )}
+      </div>
+    </header>
   );
 };
 
