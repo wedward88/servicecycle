@@ -1,12 +1,12 @@
-import { handleRouteError, jsonOk, requireApiUser } from '@/lib/api/http';
+import { handleRouteError, jsonOk } from '@/lib/api/http';
 import {
   getCommonStreamingProviders,
   searchStreamingProviders,
 } from '@/services/providers';
 
+/** Public — used by the iOS guest/local mode as well as signed-in clients. */
 export async function GET(request: Request) {
   try {
-    await requireApiUser();
     const { searchParams } = new URL(request.url);
     const q = searchParams.get('q')?.trim() ?? '';
 

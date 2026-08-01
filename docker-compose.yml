@@ -1,16 +1,16 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: servicecycle-db
+    container_name: bingequeue-db
     restart: unless-stopped
     ports:
       - '5433:5432'
     environment:
-      POSTGRES_USER: servicecycle
-      POSTGRES_PASSWORD: servicecycle
-      POSTGRES_DB: servicecycle
+      POSTGRES_USER: bingequeue
+      POSTGRES_PASSWORD: bingequeue
+      POSTGRES_DB: bingequeue
     volumes:
-      - servicecycle_pgdata:/var/lib/postgresql/data
+      - bingequeue_pgdata:/var/lib/postgresql/data
 
 volumes:
-  servicecycle_pgdata:
+  bingequeue_pgdata:

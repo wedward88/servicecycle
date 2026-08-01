@@ -16,12 +16,15 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: 'ServiceCycle',
+  title: 'BingeQueue',
   description:
     'Track streaming subscriptions and find where to watch.',
   icons: {
-    icon: '/servicecycle-mark.png',
-    apple: '/servicecycle-mark.png',
+    icon: [
+      { url: '/bingequeue-mark.svg', type: 'image/svg+xml' },
+      { url: '/bingequeue-mark.png', type: 'image/png' },
+    ],
+    apple: '/bingequeue-mark.png',
   },
 };
 
@@ -31,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="servicecycle">
+    <html lang="en" data-theme="bingequeue">
       <body
         className={`${roboto.variable} font-body antialiased min-h-screen flex flex-col bg-base-100 text-base-content`}
       >
