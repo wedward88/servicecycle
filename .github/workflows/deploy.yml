@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: deploy-servicecycle
+  group: deploy-bingequeue
   cancel-in-progress: false
 
 jobs:
@@ -38,7 +38,7 @@ jobs:
           export NVM_DIR="$HOME/.nvm"
           # shellcheck disable=SC1091
           [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-          cd /root/dev/servicecycle
+          cd /root/dev/bingequeue
           git remote get-url origin >/dev/null
           git fetch origin master
           git reset --hard origin/master
@@ -46,7 +46,7 @@ jobs:
           npx prisma generate
           npx prisma migrate deploy
           npm run build
-          pm2 restart servicecycle --update-env
+          pm2 restart bingequeue --update-env
           pm2 save
           echo "BingeQueue deploy OK"
           EOF

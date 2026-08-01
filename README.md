@@ -1,6 +1,6 @@
 # BingeQueue
 
-[servicecycle.wedward.com](https://servicecycle.wedward.com)
+[bingequeue.com](https://bingequeue.com)
 
 Track your streaming subscriptions, search TV & movies, and keep a watch list of what to binge next.
 
