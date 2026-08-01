@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from 'motion/react';
 
-import BrandMark from './components/BrandMark';
+import BrandWordmark from './components/BrandWordmark';
 import SignInButton from './components/SignInButton';
 import {
   SearchMock,
@@ -44,55 +44,55 @@ export default function Home() {
     <div className="w-full">
       <section className="hero-atmosphere relative">
         <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-16 md:px-12 md:py-20 lg:px-16 lg:py-24">
-          <div className="mx-auto flex w-full max-w-3xl items-start gap-3 text-left sm:gap-4">
+          <div className="mx-auto w-full max-w-3xl text-left">
             <motion.div
               variants={fadeUp}
               initial="hidden"
               animate="visible"
               transition={enter(0)}
-              className="shrink-0 -mt-1 text-primary sm:-mt-1.5 md:-mt-2"
+              className="inline-flex flex-col items-stretch"
             >
-              <BrandMark className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24" />
+              <BrandWordmark className="font-display text-4xl font-medium leading-none tracking-tight sm:text-5xl md:text-6xl" />
+              <motion.span
+                className="brand-underline"
+                aria-hidden
+                initial={reduceMotion ? false : { scaleX: 0, opacity: 0 }}
+                animate={{ scaleX: 1, opacity: 1 }}
+                transition={
+                  reduceMotion
+                    ? { duration: 0 }
+                    : { duration: 0.7, ease: easeOut, delay: 0.18 }
+                }
+              />
             </motion.div>
-            <div className="min-w-0 flex-1">
-              <motion.p
-                variants={fadeUp}
-                initial="hidden"
-                animate="visible"
-                transition={enter(0)}
-                className="font-display text-4xl font-medium leading-none tracking-tight text-primary brand-underline sm:text-5xl md:text-6xl"
-              >
-                BingeQueue
-              </motion.p>
-              <motion.h1
-                variants={fadeUp}
-                initial="hidden"
-                animate="visible"
-                transition={enter(0.07)}
-                className="mt-6 font-display text-3xl font-medium leading-tight text-base-content sm:text-4xl"
-              >
-                Stop juggling streaming apps.
-              </motion.h1>
-              <motion.p
-                variants={fadeUp}
-                initial="hidden"
-                animate="visible"
-                transition={enter(0.14)}
-                className="mt-4 text-lg leading-relaxed text-secondary sm:text-xl"
-              >
-                Track what you pay for and find where to watch—without
-                another forgotten subscription.
-              </motion.p>
-              <motion.div
-                variants={fadeUp}
-                initial="hidden"
-                animate="visible"
-                transition={enter(0.21)}
-                className="mt-8"
-              >
-                <SignInButton className="btn btn-primary btn-lg px-8 font-body font-medium normal-case" />
-              </motion.div>
-            </div>
+            <motion.h1
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              transition={enter(0.07)}
+              className="mt-6 font-display text-3xl font-medium leading-tight text-base-content sm:text-4xl"
+            >
+              Stop juggling streaming apps.
+            </motion.h1>
+            <motion.p
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              transition={enter(0.14)}
+              className="mt-4 text-lg leading-relaxed text-secondary sm:text-xl"
+            >
+              Track what you pay for and find where to watch—without
+              another forgotten subscription.
+            </motion.p>
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              transition={enter(0.21)}
+              className="mt-8"
+            >
+              <SignInButton className="btn btn-primary btn-lg px-8 font-body font-medium normal-case" />
+            </motion.div>
           </div>
         </div>
       </section>
