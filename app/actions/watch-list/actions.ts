@@ -1,297 +1,64 @@
 'use server';
+
 import { WatchListItemType } from '@/app/watch/watch-list/types';
-import prisma from '@/prisma/client';
-import { User, WatchList, WatchListItem } from '@prisma/client';
+import { requireUser } from '@/services/auth';
+import { isAppError } from '@/services/errors';
+import {
+  addItemToWatchList,
+  getOrCreateWatchList as getOrCreateWatchListService,
+  getWatchListForUser,
+  removeItemFromWatchList,
+  reorderWatchListForUser,
+} from '@/services/watch-list';
+import { User, WatchListItem } from '@prisma/client';
 
-import { fetchWatchProviders } from '../search/actions';
-import { validateSessionUser } from '../utils';
-
-export const getOrCreateWatchList = async (
-  user: User
-): Promise<WatchList & { watchListOnItems: WatchListItem[] }> => {
-  // get user watchList if it exists, if not, create one
-
-  let watchList = await prisma.watchList.findUnique({
-    where: {
-      userId: user.id,
-    },
-    include: {
-      watchListOnItems: {
-        include: {
-          watchListItem: true, // Fetch the full WatchListItem details
-        },
-      },
-    },
-  });
-
-  if (!watchList) {
-    watchList = await prisma.watchList.create({
-      data: {
-        userId: user.id,
-      },
-      include: {
-        watchListOnItems: {
-          include: {
-            watchListItem: true, // Fetch the full WatchListItem details
-          },
-        },
-      },
-    });
+function toActionError(error: unknown): Error {
+  if (isAppError(error)) {
+    return new Error(error.message);
   }
+  if (error instanceof Error) {
+    return error;
+  }
+  return new Error('Unknown error');
+}
 
-  return {
-    ...watchList,
-    watchListOnItems: watchList.watchListOnItems.map(
-      (item) => item.watchListItem
-    ),
-  };
+export const getOrCreateWatchList = async (user: User) => {
+  return getOrCreateWatchListService(user);
 };
 
 export const getUserWatchList = async (user: User) => {
-  const userWatchList = await prisma.watchList.findUnique({
-    where: {
-      userId: user.id,
-    },
-    include: {
-      watchListOnItems: {
-        orderBy: { sortOrder: 'asc' },
-        include: {
-          watchListItem: {
-            // Fetch the full WatchListItem details
-            include: {
-              watchListItemOnStreamingProviders: {
-                //Join table
-                include: {
-                  streamingProvider: true, // Fetch full StreamingProvider details
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
-
-  return (
-    userWatchList?.watchListOnItems.map((item) => ({
-      ...item.watchListItem,
-      streamingProviders:
-        item.watchListItem.watchListItemOnStreamingProviders.map(
-          (wp) => wp.streamingProvider
-        ),
-    })) || null
-  );
-};
-
-const getOrCreateWatchListItem = async (
-  item: WatchListItemType
-): Promise<WatchListItem> => {
-  let watchListItem = await prisma.watchListItem.findUnique({
-    where: {
-      mediaId: item.id,
-    },
-  });
-
-  if (!watchListItem) {
-    watchListItem = await prisma.watchListItem.create({
-      data: {
-        mediaId: item.id,
-        mediaType: item.mediaType,
-        originalTitle: item.originalTitle,
-        originalName: item.originalName,
-        posterPath: item.posterPath,
-        overview: item.overview,
-      },
-    });
-  }
-  return watchListItem;
+  return getWatchListForUser(user.id);
 };
 
 export const addToWatchList = async (
   item: WatchListItemType
 ): Promise<WatchListItemType | null> => {
-  const user = await validateSessionUser();
-  const watchList = await getOrCreateWatchList(user);
-  const watchListItem = await getOrCreateWatchListItem(item);
-
-  const existingProviders =
-    await prisma.watchListItemOnStreamingProvider.findMany({
-      where: { watchListItemId: watchListItem.id },
-      select: { streamingProviderId: true },
-    });
-
-  if (existingProviders.length === 0) {
-    const watchProviders = await fetchWatchProviders(
-      watchListItem.mediaType,
-      watchListItem.mediaId
-    );
-
-    const watchProviderIds = Object.keys(watchProviders).map(Number);
-    const streamingProviders =
-      await prisma.streamingProvider.findMany({
-        where: {
-          providerId: {
-            in: watchProviderIds,
-          },
-        },
-      });
-
-    await Promise.all(
-      streamingProviders.map((provider) =>
-        prisma.watchListItemOnStreamingProvider.upsert({
-          where: {
-            watchListItemId_streamingProviderId: {
-              watchListItemId: watchListItem.id,
-              streamingProviderId: provider.id,
-            },
-          },
-          update: {},
-          create: {
-            watchListItemId: watchListItem.id,
-            streamingProviderId: provider.id,
-          },
-        })
-      )
-    );
+  try {
+    const user = await requireUser();
+    return await addItemToWatchList(user, item);
+  } catch (error) {
+    throw toActionError(error);
   }
-
-  const maxOrder = await prisma.watchListOnItems.aggregate({
-    where: { watchListId: watchList.id },
-    _max: { sortOrder: true },
-  });
-  const nextOrder = (maxOrder._max.sortOrder ?? -1) + 1;
-
-  await prisma.watchListOnItems.upsert({
-    where: {
-      watchListId_watchListItemId: {
-        watchListId: watchList.id,
-        watchListItemId: watchListItem.id,
-      },
-    },
-    update: {},
-    create: {
-      watchList: { connect: { id: watchList.id } },
-      watchListItem: { connect: { id: watchListItem.id } },
-      sortOrder: nextOrder,
-    },
-  });
-
-  const updatedWatchListItem = await prisma.watchListItem.findUnique({
-    where: { id: watchListItem.id },
-    include: {
-      watchListItemOnStreamingProviders: {
-        include: {
-          streamingProvider: true,
-        },
-      },
-    },
-  });
-
-  if (!updatedWatchListItem) {
-    throw new Error('WatchListItem not found');
-  }
-
-  const updatedItemWithProviders: WatchListItemType = {
-    ...updatedWatchListItem,
-    streamingProviders:
-      updatedWatchListItem.watchListItemOnStreamingProviders.map(
-        (entry) => entry.streamingProvider
-      ),
-  };
-
-  return updatedItemWithProviders;
 };
 
 export const removeFromWatchList = async (
   item: WatchListItem
 ): Promise<WatchListItem[]> => {
-  await validateSessionUser();
-
-  const watchListItem = await prisma.watchListItem.findUnique({
-    where: {
-      id: item.id,
-    },
-  });
-
-  if (!watchListItem) {
-    throw Error('WatchListItem not found.');
+  try {
+    const user = await requireUser();
+    return await removeItemFromWatchList(user.id, item.id);
+  } catch (error) {
+    throw toActionError(error);
   }
-
-  const watchListOnItem = await prisma.watchListOnItems.findFirst({
-    where: {
-      watchListItemId: item.id,
-    },
-  });
-
-  if (!watchListOnItem) {
-    throw Error('WatchListItem not associated with any WatchList.');
-  }
-
-  await prisma.watchListOnItems.delete({
-    where: {
-      watchListId_watchListItemId: {
-        watchListId: watchListOnItem.watchListId,
-        watchListItemId: watchListItem.id,
-      },
-    },
-  });
-
-  const watchList = await prisma.watchList.findUnique({
-    where: {
-      id: watchListOnItem.watchListId,
-    },
-    include: {
-      watchListOnItems: {
-        include: {
-          watchListItem: true,
-        },
-      },
-    },
-  });
-
-  return (
-    watchList?.watchListOnItems.map((item) => item.watchListItem) ??
-    []
-  );
 };
 
 export const reorderWatchList = async (
   orderedItemIds: number[]
 ): Promise<void> => {
-  const user = await validateSessionUser();
-  const watchList = await prisma.watchList.findUnique({
-    where: { userId: user.id },
-    select: { id: true },
-  });
-
-  if (!watchList) {
-    throw new Error('Watch list not found.');
+  try {
+    const user = await requireUser();
+    await reorderWatchListForUser(user.id, orderedItemIds);
+  } catch (error) {
+    throw toActionError(error);
   }
-
-  const existing = await prisma.watchListOnItems.findMany({
-    where: { watchListId: watchList.id },
-    select: { watchListItemId: true },
-  });
-  const existingIds = new Set(existing.map((row) => row.watchListItemId));
-
-  if (
-    orderedItemIds.length !== existingIds.size ||
-    orderedItemIds.some((id) => !existingIds.has(id))
-  ) {
-    throw new Error('Invalid watch list order.');
-  }
-
-  await prisma.$transaction(
-    orderedItemIds.map((watchListItemId, index) =>
-      prisma.watchListOnItems.update({
-        where: {
-          watchListId_watchListItemId: {
-            watchListId: watchList.id,
-            watchListItemId,
-          },
-        },
-        data: { sortOrder: index },
-      })
-    )
-  );
 };

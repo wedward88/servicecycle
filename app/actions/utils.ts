@@ -1,27 +1,11 @@
 'use server';
 
-import { getServerSession } from 'next-auth';
+import { requireUser } from '@/services/auth';
 
-import prisma from '@/prisma/client';
-
-import { authOptions } from '../lib/utils/authOptions';
-
+/**
+ * @deprecated Prefer `requireUser` from `@/services/auth`.
+ * Kept for existing call sites.
+ */
 export const validateSessionUser = async () => {
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.email) {
-    throw new Error('User is not authenticated.');
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session?.user?.email,
-    },
-  });
-
-  if (!user) {
-    throw new Error('User not found.');
-  }
-
-  return user;
+  return requireUser();
 };
