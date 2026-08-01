@@ -10,7 +10,7 @@ describe('Home', () => {
         name: /Stop juggling streaming apps/i,
       })
     ).toBeInTheDocument();
-    expect(screen.getByText('BingeQueue')).toBeInTheDocument();
+    expect(screen.getByLabelText('BingeQueue')).toBeInTheDocument();
   });
 
   it('should render get started button', () => {
