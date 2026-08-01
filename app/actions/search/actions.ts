@@ -4,6 +4,7 @@ import {
   ProviderDictionary,
   WatchProvidersResponse,
 } from '@/app/watch/components/types';
+import { SearchResultItemType } from '@/app/watch/search/types';
 
 export async function fetchWatchProviders(type: string, id: number) {
   const TMDB_ENDPOINT = `${type}/${id}/watch/providers`;
@@ -58,22 +59,30 @@ function isSearchableResult(item: TMDBListItem) {
   );
 }
 
-function normalizeDiscoverItem(
+function normalizeSearchItem(
   item: TMDBListItem,
-  mediaType: 'movie' | 'tv'
-) {
+  mediaType?: 'movie' | 'tv'
+): SearchResultItemType {
+  const resolvedType =
+    mediaType ||
+    (item.media_type === 'tv' || item.media_type === 'movie'
+      ? item.media_type
+      : 'movie');
+
   return {
     id: item.id,
-    media_type: mediaType,
+    media_type: resolvedType,
     original_name: item.original_name || item.name || '',
     original_title: item.original_title || item.title || '',
     overview: item.overview || '',
-    poster_path: item.poster_path,
+    poster_path: item.poster_path || '',
     watchListId: 0,
   };
 }
 
-export async function fetchTMDBResults(query: string) {
+export async function fetchTMDBResults(
+  query: string
+): Promise<SearchResultItemType[]> {
   const TMDB_ENDPOINT = 'search/multi?query=';
   const URL = `${process.env.TMDB_URL}${TMDB_ENDPOINT}${encodeURIComponent(query)}&api_key=${process.env.TMDB_API_KEY}`;
   const response = await fetch(URL);
@@ -83,13 +92,16 @@ export async function fetchTMDBResults(query: string) {
   }
 
   const results = await response.json();
-
   const final = results.results as TMDBListItem[];
 
-  return final.filter(isSearchableResult);
+  return final
+    .filter(isSearchableResult)
+    .map((item) => normalizeSearchItem(item));
 }
 
-export async function fetchTMDBByProvider(providerId: number) {
+export async function fetchTMDBByProvider(
+  providerId: number
+): Promise<SearchResultItemType[]> {
   const common = `api_key=${process.env.TMDB_API_KEY}&watch_region=US&with_watch_providers=${providerId}&with_watch_monetization_types=flatrate&sort_by=popularity.desc&language=en-US`;
 
   const [moviesRes, tvRes] = await Promise.all([
@@ -112,11 +124,11 @@ export async function fetchTMDBByProvider(providerId: number) {
 
   const movieResults = ((movies.results || []) as TMDBListItem[])
     .filter((item) => item.poster_path && item.vote_average !== 0)
-    .map((item) => normalizeDiscoverItem(item, 'movie'));
+    .map((item) => normalizeSearchItem(item, 'movie'));
 
   const tvResults = ((tv.results || []) as TMDBListItem[])
     .filter((item) => item.poster_path && item.vote_average !== 0)
-    .map((item) => normalizeDiscoverItem(item, 'tv'));
+    .map((item) => normalizeSearchItem(item, 'tv'));
 
   return [...tvResults, ...movieResults].slice(0, 24);
 }
