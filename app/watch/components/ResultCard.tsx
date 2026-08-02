@@ -87,27 +87,27 @@ const ResultCard = ({ result, isInWatchList }: ResultCardProps) => {
         </div>
       </button>
 
-      <div className="flex flex-1 flex-col gap-2 px-3 py-3">
+      <div className="flex flex-1 flex-col gap-2 px-3 py-3 sm:gap-2.5 sm:px-3.5 sm:py-3.5 xl:gap-3 xl:px-4 xl:py-4">
         <button
           type="button"
           onClick={resultClick}
           disabled={isOpening}
           className="min-w-0 flex-1 text-left disabled:cursor-wait"
         >
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.12em] text-secondary">
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.12em] text-secondary xl:text-[0.8125rem]">
             <span className="text-primary" aria-hidden>
               {isTV ? <ImTv /> : <MdLocalMovies />}
             </span>
             {isTV ? 'TV' : 'Movie'}
           </span>
-          <h2 className="mt-1 line-clamp-2 min-h-[2.5rem] font-medium leading-snug text-base-content">
+          <h2 className="mt-1 line-clamp-2 min-h-[2.5rem] text-sm font-medium leading-snug text-base-content xl:mt-1.5 xl:min-h-[2.75rem] xl:text-base">
             {title}
           </h2>
         </button>
 
         <AddToWatchList
           compact
-          className="mt-auto w-full"
+          className="mt-auto w-full xl:px-2.5 xl:py-1.5 xl:text-sm"
           isInWatchList={isInWatchList}
           result={searchResult}
         />

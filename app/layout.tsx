@@ -44,7 +44,7 @@ export default function RootLayout({
             <MainStoreProvider>{children}</MainStoreProvider>
           </MainShell>
           <footer className="mt-auto border-t border-base-300 bg-base-100">
-            <div className="mx-auto w-full max-w-6xl px-5 py-6 md:px-8">
+            <div className="mx-auto w-full max-w-6xl px-5 py-6 md:px-8 xl:max-w-7xl 2xl:max-w-[90rem] 2xl:px-10">
               <TmdbAttribution />
             </div>
           </footer>

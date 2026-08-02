@@ -26,24 +26,24 @@ const WatchList = () => {
 
   return (
     <section className="overflow-hidden border border-base-300 surface">
-      <div className="flex items-center justify-between border-b border-base-300 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-base-300 px-4 py-3 xl:px-5 xl:py-4">
         <div>
-          <h2 className="font-display text-base font-semibold text-base-content">
+          <h2 className="font-display text-base font-semibold text-base-content xl:text-lg">
             Watch list
           </h2>
           {!noWatchList && (
-            <p className="mt-0.5 text-xs text-secondary">
+            <p className="mt-0.5 text-xs text-secondary xl:text-sm">
               Drag to reorder
             </p>
           )}
         </div>
-        <p className="text-xs text-secondary">
+        <p className="text-xs text-secondary xl:text-sm">
           {noWatchList ? '0' : userWatchList.length}
         </p>
       </div>
 
       {noWatchList ? (
-        <p className="px-4 py-5 text-sm text-secondary">
+        <p className="px-4 py-5 text-sm text-secondary xl:px-5 xl:py-6 xl:text-base">
           Save titles from search to build your list.
         </p>
       ) : (
@@ -52,7 +52,7 @@ const WatchList = () => {
             axis="y"
             values={userWatchList}
             onReorder={reorderWatchList}
-            className="max-h-[28rem] divide-y divide-base-300 overflow-y-auto no-scrollbar lg:max-h-[min(70vh,36rem)]"
+            className="max-h-[28rem] divide-y divide-base-300 overflow-y-auto no-scrollbar lg:max-h-[min(72vh,42rem)] 2xl:max-h-[min(78vh,52rem)]"
           >
             {userWatchList.map((listItem) => (
               <WatchListItem

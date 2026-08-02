@@ -68,7 +68,7 @@ const NavBar = () => {
           'block'
       )}
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 md:h-[4.25rem] md:px-8">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 md:h-[4.25rem] md:px-8 xl:max-w-7xl 2xl:max-w-[90rem] 2xl:px-10">
         {status === 'loading' && (
           <p className="text-sm text-secondary">Loading...</p>
         )}

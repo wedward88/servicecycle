@@ -142,16 +142,16 @@ const SearchSection = () => {
 
   return (
     <section className="overflow-hidden border border-base-300 surface">
-      <div className="border-b border-base-300 px-5 py-4">
-        <h2 className="font-display text-lg font-semibold text-base-content">
+      <div className="border-b border-base-300 px-5 py-4 xl:px-6 xl:py-5">
+        <h2 className="font-display text-lg font-semibold text-base-content xl:text-xl">
           Search for shows or movies
         </h2>
-        <label className="mt-3 flex items-center gap-2 border-b-2 border-primary pb-2">
+        <label className="mt-3 flex items-center gap-2 border-b-2 border-primary pb-2 xl:mt-4 xl:gap-3 xl:pb-2.5">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 16 16"
             fill="currentColor"
-            className="h-4 w-4 text-primary"
+            className="h-4 w-4 text-primary xl:h-5 xl:w-5"
           >
             <path
               fillRule="evenodd"
@@ -164,7 +164,7 @@ const SearchSection = () => {
             placeholder="Search by title"
             value={searchTerm}
             onChange={handleChange}
-            className="h-9 w-full bg-transparent text-base text-base-content focus:outline-none"
+            className="h-9 w-full bg-transparent text-base text-base-content focus:outline-none xl:h-11 xl:text-lg"
           />
           {(searchTerm || selectedProviderId) && (
             <FaCircleXmark
@@ -183,13 +183,13 @@ const SearchSection = () => {
                 type="button"
                 onClick={() => handleMediaFilterChange(id)}
                 className={clsx(
-                  'inline-flex items-center gap-1.5 border px-2.5 py-1.5 text-sm transition-colors',
+                  'inline-flex items-center gap-1.5 border px-2.5 py-1.5 text-sm transition-colors xl:px-3 xl:py-2',
                   isSelected
                     ? 'border-primary bg-primary/10 text-primary'
                     : 'border-base-300 bg-base-100 text-base-content hover:border-primary/50'
                 )}
               >
-                {Icon ? <Icon className="h-3.5 w-3.5" /> : null}
+                {Icon ? <Icon className="h-3.5 w-3.5 xl:h-4 xl:w-4" /> : null}
                 <span className="font-medium">{label}</span>
               </button>
             );
@@ -217,7 +217,7 @@ const SearchSection = () => {
                         handleProviderSelect(provider.providerId)
                       }
                       className={clsx(
-                        'inline-flex items-center gap-2 border px-2.5 py-1.5 text-sm transition-colors',
+                        'inline-flex items-center gap-2 border px-2.5 py-1.5 text-sm transition-colors xl:px-3 xl:py-2',
                         isSelected
                           ? 'border-primary bg-primary/10 text-primary'
                           : 'border-base-300 bg-base-100 text-base-content hover:border-primary/50'
@@ -229,7 +229,7 @@ const SearchSection = () => {
                           alt=""
                           width={24}
                           height={24}
-                          className="h-6 w-6 rounded-md object-cover"
+                          className="h-6 w-6 rounded-md object-cover xl:h-7 xl:w-7"
                         />
                       ) : null}
                       <span className="font-medium">
@@ -243,9 +243,9 @@ const SearchSection = () => {
           )}
         </div>
       </div>
-      <div className="p-4">
+      <div className="p-4 xl:p-5 2xl:p-6">
         {selectedProvider && !isLoading && (
-          <p className="mb-3 text-sm text-secondary">
+          <p className="mb-3 text-sm text-secondary xl:mb-4 xl:text-base">
             Popular{' '}
             {mediaFilter === 'movie'
               ? 'movies'

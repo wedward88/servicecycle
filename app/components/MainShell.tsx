@@ -17,7 +17,7 @@ const MainShell = ({ children }: { children: React.ReactNode }) => {
       {isLanding ? (
         children
       ) : (
-        <div className="mx-auto w-full max-w-6xl px-5 py-8 md:px-8 md:py-10">
+        <div className="mx-auto w-full max-w-6xl px-5 py-8 md:px-8 md:py-10 xl:max-w-7xl 2xl:max-w-[90rem] 2xl:px-10 2xl:py-12">
           {children}
         </div>
       )}

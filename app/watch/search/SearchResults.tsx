@@ -25,7 +25,7 @@ const SearchResults = ({ searchResults }: SearchResultsProps) => {
     <div className="w-full">
       <motion.ul
         key={searchResults.map((r) => r.id).join('-')}
-        className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5"
+        className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 xl:gap-5 2xl:gap-6"
         variants={fadeIn}
         initial={reduceMotion ? false : 'hidden'}
         animate="visible"
