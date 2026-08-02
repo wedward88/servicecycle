@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from 'motion/react';
 
 import BrandWordmark from './components/BrandWordmark';
 import SignInButton from './components/SignInButton';
+import IosAppSection from './components/landing/IosAppSection';
 import {
   SearchMock,
   SubscriptionsMock,
@@ -127,6 +128,8 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      <IosAppSection />
 
       <section className="hero-atmosphere border-t border-base-300 px-6 py-20 md:px-12">
         <div className="mx-auto flex max-w-2xl flex-col items-center text-center">

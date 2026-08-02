@@ -19,9 +19,15 @@ export function handleRouteError(error: unknown) {
     return jsonError(error.status, error.message, error.code);
   }
 
-  console.error('[api]', error);
+  // Next.js 15.1 can throw ERR_INVALID_ARG_TYPE ("payload" … null) when
+  // pretty-printing some Error objects (e.g. Prisma). Log a plain string.
   const message =
     error instanceof Error ? error.message : 'Internal server error';
+  const stack = error instanceof Error ? error.stack : undefined;
+  console.error('[api]', message);
+  if (stack) {
+    console.error(stack);
+  }
   return jsonError(500, message);
 }
 
