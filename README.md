@@ -66,3 +66,4 @@ Optional env: `MOBILE_JWT_SECRET` (falls back to `NEXTAUTH_SECRET`), `GOOGLE_IOS
 ## Future Plans
 
 - Add user registration/log in separately from OAuth2.0.
+- Account deletion
